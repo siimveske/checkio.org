@@ -2,7 +2,7 @@ def between_markers(text: str, begin: str, end: str) -> str:
     """
         returns substring between two given markers
     """
-    start = text.index(begin)+1
+    start = text.index(begin) + 1
     stop = text.index(end)
 
     return text[start:stop]
