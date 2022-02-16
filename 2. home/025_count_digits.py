@@ -1,10 +1,6 @@
 def count_digits(text: str) -> int:
     '''Count the number of digits in a given string.'''
-    cnt = 0
-    for i in text:
-        if i.isdigit():
-            cnt += 1
-    return cnt
+    return sum(c.isdigit() for c in text)
 
 
 if __name__ == '__main__':
