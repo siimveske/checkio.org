@@ -4,15 +4,9 @@ Sort the given iterable so that its elements end up in the decreasing frequency 
 
 
 def frequency_sort(items: list):
-    cnt = {}
-    pos = {}
-    for idx, item in enumerate(items):
-        cnt[item] = cnt.get(item, 0) + 1
-        if item not in pos:
-            pos[item] = idx
 
-    items.sort(key=lambda x: (-cnt[x], pos[x]))
-    return items
+    result = sorted(items, key=lambda x: (-items.count(x), items.index(x)))
+    return result
 
 
 if __name__ == '__main__':
