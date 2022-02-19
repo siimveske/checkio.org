@@ -7,10 +7,7 @@ def split_list(items: list) -> list:
     if not items:
         return [[], []]
 
-    if len(items) % 2 == 0:
-        middle = len(items) // 2
-    else:
-        middle = (len(items) // 2) + 1
+    middle = ((len(items) + 1) // 2)
 
     return [items[:middle], items[middle:]]
 
