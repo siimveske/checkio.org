@@ -1,18 +1,14 @@
 from typing import Union
-from datetime import datetime
 
 
 def sun_angle(time: str) -> Union[int, str]:
-    t = datetime.strptime(time, '%H:%M')
-    if t.hour < 6 or (t.hour >= 18 and t.minute > 0):
-        return "I don't see the sun!"
 
-    hour = int(t.strftime("%H"))
-    minute = int(t.strftime("%M"))
-    delta = (hour - 6) * 3600 + (minute * 60)
-    result = (15.0 * delta) / 3600.0
+    hour, minute = map(int, time.split(':'))
 
-    return round(result, 2)
+    # 1h == 15deg 1min == 0.25 deg
+    angle = ((15 * hour) + (0.25 * minute)) - 90
+
+    return angle if 0 <= angle <= 180 else "I don't see the sun!"
 
 
 if __name__ == '__main__':
