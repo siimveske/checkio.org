@@ -7,20 +7,10 @@ def sum_light(els: List[datetime], start_watching: Optional[datetime] = None) ->
     how long the light bulb has been turned on
     """
     result = 0
-    i, j = 0, 1
-    while j < len(els):
-        start = els[i]
-        stop = els[j]
-        if start_watching:
-            if start <= start_watching <= stop:
-                start = start_watching
-            if start_watching <= start:
-                result += (stop - start).total_seconds()
-        else:
-            result += (stop - start).total_seconds()
 
-        i += 2
-        j += 2
+    for start, stop in zip(els[::2], els[1::2]):
+        time = max(start_watching or stop, stop) - max(start_watching or start, start)
+        result += time.total_seconds()
 
     return int(result)
 
