@@ -1,5 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Union, Tuple
+'''
+https://py.checkio.org/en/mission/multiple-lightbulbs/
+'''
 
 
 def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
@@ -43,174 +46,173 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
         elif end_watching and (start <= end_watching <= end):
             end = end_watching
 
-        delta = end - start
-        result += delta.total_seconds()
+        if start < end:
+            delta = end - start
+            result += delta.total_seconds()
 
     # handle not turned off lights
-    if lights:
-        for idx in lights:
-            if start_watching:
-                s = max([lights[idx], start_watching])
-            else:
-                s = lights[idx]
-            result += sum_light([(s, idx), (end_watching, idx)])
+    if ready or lights:
+        s = min(list(lights.values()) + ready[:1])
+        if start_watching:
+            s = max(start_watching, s)
+        result += sum_light([s, end_watching])
 
     return result
 
 
 if __name__ == '__main__':
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ]) == 60
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ]) == 60
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 11, 0, 0), 2),
-    #     (datetime(2015, 1, 12, 11, 1, 0), 2),
-    # ]) == 70
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 11, 0, 0), 2),
+        (datetime(2015, 1, 12, 11, 1, 0), 2),
+    ]) == 70
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ]) == 30
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ]) == 30
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ]) == 40
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ]) == 40
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 3),
-    #     (datetime(2015, 1, 12, 10, 1, 20), 3),
-    # ]) == 60
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+        (datetime(2015, 1, 12, 10, 1, 0), 3),
+        (datetime(2015, 1, 12, 10, 1, 20), 3),
+    ]) == 60
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 50)) == 10
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], datetime(2015, 1, 12, 10, 0, 50)) == 10
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 30)) == 20
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 30)) == 20
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 20)) == 30
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 20)) == 30
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 10)) == 30
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 10)) == 30
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 50)) == 0
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 50)) == 0
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 30)) == 20
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 30)) == 20
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 20)) == 30
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 20)) == 30
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 20), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 40), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 20)) == 50
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+        (datetime(2015, 1, 12, 10, 1, 20), 2),
+        (datetime(2015, 1, 12, 10, 1, 40), 2),
+    ], datetime(2015, 1, 12, 10, 0, 20)) == 50
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 30), datetime(2015, 1, 12, 10, 1, 0)) == 30
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], datetime(2015, 1, 12, 10, 0, 30), datetime(2015, 1, 12, 10, 1, 0)) == 30
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 20), datetime(2015, 1, 12, 10, 1, 0)) == 40
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], datetime(2015, 1, 12, 10, 0, 20), datetime(2015, 1, 12, 10, 1, 0)) == 40
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    # ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 0, 30)) == 30
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        datetime(2015, 1, 12, 10, 0, 10),
+    ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 0, 30)) == 30
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 1, 0)) == 40
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 1, 0)) == 40
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 0, 10)) == 0
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 0), datetime(2015, 1, 12, 10, 0, 10)) == 0
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 10), datetime(2015, 1, 12, 10, 0, 20)) == 10
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+    ], datetime(2015, 1, 12, 10, 0, 10), datetime(2015, 1, 12, 10, 0, 20)) == 10
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -219,29 +221,29 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 2),
     ], datetime(2015, 1, 12, 10, 0, 10), datetime(2015, 1, 12, 10, 0, 20)) == 10
 
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    # ], datetime(2015, 1, 12, 10, 0, 10), datetime(2015, 1, 12, 10, 0, 30)) == 20
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+    ], datetime(2015, 1, 12, 10, 0, 10), datetime(2015, 1, 12, 10, 0, 30)) == 20
 
-    # assert sum_light(els=[
-    #     (datetime(2015, 1, 11, 0, 0, 0), 3),
-    #     datetime(2015, 1, 12, 0, 0, 0),
-    #     (datetime(2015, 1, 13, 0, 0, 0), 3),
-    #     (datetime(2015, 1, 13, 0, 0, 0), 2),
-    #     datetime(2015, 1, 14, 0, 0, 0),
-    #     (datetime(2015, 1, 15, 0, 0, 0), 2),
-    # ], start_watching=datetime(2015, 1, 10, 0, 0, 0), end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
+    assert sum_light(els=[
+        (datetime(2015, 1, 11, 0, 0, 0), 3),
+        datetime(2015, 1, 12, 0, 0, 0),
+        (datetime(2015, 1, 13, 0, 0, 0), 3),
+        (datetime(2015, 1, 13, 0, 0, 0), 2),
+        datetime(2015, 1, 14, 0, 0, 0),
+        (datetime(2015, 1, 15, 0, 0, 0), 2),
+    ], start_watching=datetime(2015, 1, 10, 0, 0, 0), end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 10, 10),
-    #     datetime(2015, 1, 12, 11, 0, 0)
-    # ],
-    #     datetime(2015, 1, 12, 11, 5, 0),
-    #     datetime(2015, 1, 12, 11, 10, 0)
-    # ) == 300
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 10, 10),
+        datetime(2015, 1, 12, 11, 0, 0)
+    ],
+        datetime(2015, 1, 12, 11, 5, 0),
+        datetime(2015, 1, 12, 11, 10, 0)
+    ) == 300
 
     print("OK")
