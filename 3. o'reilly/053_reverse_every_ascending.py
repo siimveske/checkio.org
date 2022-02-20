@@ -17,11 +17,13 @@ def reverse_ascending(items):
         if a < b:
             tmp.append(a)
         else:
+            tmp.append(a)
             result += sorted(tmp, reverse=True)
             tmp.clear()
+        if i == len(items) - 1:
+            tmp.append(b)
 
     result += sorted(tmp, reverse=True)
-
     return result
 
 
