@@ -1,46 +1,27 @@
 from datetime import datetime
 from typing import List, Optional
 
+'''
+https://py.checkio.org/en/mission/lightbulb-end-watching/
+'''
+
 
 def sum_light(els: List[datetime], start_watching: Optional[datetime] = None, end_watching: Optional[datetime] = None) -> int:
     """
     how long the light bulb has been turned on
     """
+
+    if len(els) % 2:
+        els.append(datetime.max)
+
+    sw = start_watching or els[0]
+    ew = end_watching or datetime.max
+
     result = 0
-    history = []
-
-    for item in els:
-        if not history:
-            history.append(item)
-            continue
-
-        start = history.pop()
-        stop = item
-
-        if start_watching:
-            if start_watching >= stop:
-                continue
-            if start < start_watching < stop:
-                start = start_watching
-
-        if end_watching:
-            if end_watching <= start:
-                continue
-            if start < end_watching < stop:
-                stop = end_watching
-
-        result += (stop - start).total_seconds()
-
-    if history:
-        start = history.pop()
-        if start >= end_watching:
-            return int(result)
-
-        stop = end_watching
-        if start < start_watching < stop:
-            start = start_watching
-
-        result += (stop - start).total_seconds()
+    for i in range(0, len(els), 2):
+        start, end = els[i], els[i + 1]
+        if sw <= end and ew >= start:
+            result += (min(ew, end) - max(sw, start)).total_seconds()
 
     return int(result)
 
