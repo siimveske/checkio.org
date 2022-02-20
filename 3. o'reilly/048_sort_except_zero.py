@@ -4,12 +4,7 @@ from typing import Iterable
 def except_zero(items: list) -> Iterable:
     numbers = [i for i in items if i != 0]
     numbers.sort(reverse=True)
-    result = []
-    for i in items:
-        if i == 0:
-            result.append(0)
-        else:
-            result.append(numbers.pop())
+    result = [i and numbers.pop() for i in items]
     return result
 
 
