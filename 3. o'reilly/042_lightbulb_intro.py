@@ -7,11 +7,8 @@ def sum_light(els: List[datetime]) -> int:
         how long the light bulb has been turned on
     """
     result = 0
-    i, j = 0, 1
-    while j < len(els):
-        result += (els[j] - els[i]).total_seconds()
-        i += 2
-        j += 2
+    for i in range(0, len(els), 2):
+        result += (els[i + 1] - els[i]).total_seconds()
 
     return int(result)
 
