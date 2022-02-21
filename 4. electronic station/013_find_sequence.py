@@ -7,52 +7,46 @@ from typing import List
 def checkio(matrix: List[List[int]]) -> bool:
     for x in range(len(matrix)):
         for y in range(len(matrix[0])):
-            cnt = dfs(matrix, x, y, set())
+            cnt = explore(matrix, x, y)
             if cnt >= 4:
                 return True
     return False
 
 
-def dfs(matrix, x, y, visited):
+def explore(matrix, x, y):
+    neighbors = dict(
+        up=(-1, 0),
+        up_right=(-1, 1),
+        right=(0, 1),
+        down_right=(1, 1),
+        down=(1, 0),
+        down_left=(1, -1),
+        left=(0, -1),
+        up_left=(1, -1)
+    )
 
-    location = (x, y)
-    if location in visited:
-        return 0
-    visited.add(location)
-
-    cnt = 1
+    result = float('-inf')
     current_value = matrix[x][y]
 
-    for nx, ny in get_neighbors(matrix, x, y, current_value):
-        if (nx, ny) not in visited:
-            cnt += dfs(matrix, nx, ny, set(visited))
+    for dx, dy in neighbors.values():
+        cnt = 1
+        nx, ny = x + dx, y + dy
+
+        while inbound(matrix, nx, ny) and matrix[nx][ny] == current_value:
+            cnt += 1
+            nx, ny = nx + dx, ny + dy
+
+        result = max(cnt, result)
+        if result >= 4:
+            break
 
     return cnt
 
 
-def get_neighbors(matrix, x, y, value):
-
-    neighbors = dict(
-        up=(x - 1, y),
-        up_right=(x - 1, y + 1),
-        right=(x, y + 1),
-        down_right=(x + 1, y + 1),
-        down=(x + 1, y),
-        down_left=(x + 1, y - 1),
-        left=(x, y - 1),
-        up_left=(x + 1, y - 1)
-    )
-
-    result = []
-    for nx, ny in neighbors.values():
-
-        row_inbound = 0 <= nx < len(matrix)
-        col_inbound = 0 <= ny < len(matrix[0])
-
-        if row_inbound and col_inbound and matrix[nx][ny] == value:
-            result.append((nx, ny))
-
-    return result
+def inbound(matrix, x, y):
+    row_inbound = 0 <= x < len(matrix)
+    col_inbound = 0 <= y < len(matrix[0])
+    return row_inbound and col_inbound
 
 
 if __name__ == '__main__':
