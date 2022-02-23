@@ -15,7 +15,8 @@ def unix_match(filename: str, pattern: str) -> bool:
     regex = regex.replace(r'XXX', r'\\*')
     regex = regex.replace(r'YYY', r'\\?')
 
-    regex = regex.replace('[]', '')
+    if '[]' in regex:
+        return False
 
     result = re.match(regex, filename)
 
@@ -25,9 +26,8 @@ def unix_match(filename: str, pattern: str) -> bool:
 def _escape(text):
     charsets = re.search(r'\[(.*)\]', text)
     if charsets:
-        for cset in charsets.groups():
-            charset = set(cset)
-            text = text.replace(cset, re.escape(''.join(charset)))
+        for charset in charsets.groups():
+            text = text.replace(charset, re.escape(charset))
     return text
 
 
@@ -41,4 +41,5 @@ if __name__ == '__main__':
     assert unix_match('log12.txt', 'log??.txt') == True
     assert unix_match("[?*]", "[[][?][*][]]") == True
     assert unix_match("name.txt", "name[]txt") == False
+    assert unix_match("[check].txt", "[][]check[][].txt") == True
     print("OK")
