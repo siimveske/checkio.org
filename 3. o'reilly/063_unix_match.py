@@ -3,23 +3,55 @@ import re
 
 def unix_match(filename: str, pattern: str) -> bool:
 
-    regex = _escape(pattern)
-    regex = regex.replace('.', r'\.')
+    i, j = 0, 0
+    result = []
 
-    regex = regex.replace(r'\\*', r'XXX')
-    regex = regex.replace(r'\\?', r'YYY')
+    while j < len(pattern):
+        current = pattern[j]
+        if current == '*':
+            result.append('.*')
+        elif current == '?':
+            result.append('.')
+        elif current == '.':
+            result.append(r'\.')
+        elif current == '[':
+            j += 1
+            content = []
+            while j < len(pattern):
+                head = pattern[j]
+                if head == ']':
+                    if content:
+                        content = ''.join(content)
+                        result.append(f'[{content}]')
+                        break
+                    else:
+                        if j < pattern.rindex(']'):
+                            content.append(re.escape(head))
+                        else:
+                            # we have an empty character set [] in pattern
+                            return False
+                elif head == '!':
+                    if pattern[j + 1] == ']':
+                        content.append('!')
+                    else:
+                        content.append('^')
+                else:
+                    if head == '[':
+                        content.append(re.escape(head))
+                    else:
+                        content.append(head)
+                j += 1
+            i = j
 
-    regex = regex.replace('*', '.*')
-    regex = regex.replace('?', '.')
+        else:
+            result.append(current)
+        i += 1
+        j += 1
 
-    regex = regex.replace(r'XXX', r'\\*')
-    regex = regex.replace(r'YYY', r'\\?')
-
-    if '[]' in regex:
-        return False
+    regex = ''.join(result)
+    regex = regex.replace('[!]', r'\[!\]')
 
     result = re.match(regex, filename)
-
     return bool(result)
 
 
@@ -42,4 +74,8 @@ if __name__ == '__main__':
     assert unix_match("[?*]", "[[][?][*][]]") == True
     assert unix_match("name.txt", "name[]txt") == False
     assert unix_match("[check].txt", "[][]check[][].txt") == True
+    assert unix_match("1name.txt", "[!abc]name.txt") == True
+    assert unix_match("[!]check.txt", "[!]check.txt") == True
+    assert unix_match("Feb 2018", "[A-Z][a-z][a-zA-Z] [2-3][0-4][1-1][5-9]")
+
     print("OK")
