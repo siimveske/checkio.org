@@ -8,12 +8,15 @@ def checkio(data):
 
 
 def build_graph(data):
-    graph = defaultdict(list)
+    graph = {}
     for item in data:
         for i in range(len(item)):
             parent = item[i]
-            children = list(item[i + 1:])
-            graph[parent] += children
+            if parent not in graph:
+                graph[parent] = []
+            for child in list(item[i + 1:]):
+                if child not in graph[parent] and child != parent:
+                    graph[parent].append(child)
     return graph
 
 
@@ -24,17 +27,18 @@ def topological_order(graph):
         for child in graph[node]:
             num_parents[child] += 1
 
-    ready = set(graph.keys()) - set(num_parents.keys())
-
     solution = []
+    ready = list(set(graph.keys()) - set(num_parents.keys()))
+
     while ready:
+        ready.sort(reverse=True)
         current_item = ready.pop()
         solution.append(current_item)
 
         for child in graph[current_item]:
             num_parents[child] -= 1
             if num_parents[child] == 0:
-                ready.add(child)
+                ready.append(child)
 
     return ''.join(solution)
 
