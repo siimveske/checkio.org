@@ -29,17 +29,16 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
                 btn_press_map[item[1]].append(item[0])
             else:
                 btn_press_map[1].append(item)
+
         for idx in btn_press_map:
-            presses = [x for x in btn_press_map[idx]]
+            presses = btn_press_map[idx]
             if len(presses) % 2 != 0:
-                presses.append(end_watching, 0)
+                presses.append(end_watching)
 
             time_left = operating
-            for j in range(0, len(presses), 2):
+            for start, stop in zip(presses[::2], presses[1::2]):
                 if time_left.total_seconds() <= 0:
-                    continue
-                start = presses[j]
-                stop = presses[j + 1]
+                    break
                 delta = stop - start
 
                 button_presses.append((start, idx))
@@ -48,9 +47,10 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
                 else:
                     button_presses.append((stop, idx))
                 time_left -= delta
-
     else:
         button_presses = [dt if type(dt) == tuple else (dt, 1) for dt in els]
+
+    button_presses.sort()
 
     if len(button_presses) % 2 != 0:
         button_presses.append((end_watching, 0))
