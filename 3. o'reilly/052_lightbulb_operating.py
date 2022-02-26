@@ -2,6 +2,7 @@
 https://py.checkio.org/en/mission/lightbulb-operating/
 """
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import List, Optional, Union, Tuple
 
@@ -20,9 +21,38 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
     if end_watching is None:
         end_watching = datetime(9999, 12, 31, 23, 59, 59)
 
-    button_presses = [dt if type(dt) == tuple else (dt, 1) for dt in els]
-    button_presses.sort()
-    if len(button_presses) % 2 == 1:
+    if operating:
+        button_presses = []
+        btn_press_map = defaultdict(list)
+        for item in els:
+            if type(item) == tuple:
+                btn_press_map[item[1]].append(item[0])
+            else:
+                btn_press_map[1].append(item)
+        for idx in btn_press_map:
+            presses = [x for x in btn_press_map[idx]]
+            if len(presses) % 2 != 0:
+                presses.append(end_watching, 0)
+
+            time_left = operating
+            for j in range(0, len(presses), 2):
+                if time_left.total_seconds() <= 0:
+                    continue
+                start = presses[j]
+                stop = presses[j + 1]
+                delta = stop - start
+
+                button_presses.append((start, idx))
+                if delta > time_left:
+                    button_presses.append((start + time_left, idx))
+                else:
+                    button_presses.append((stop, idx))
+                time_left -= delta
+
+    else:
+        button_presses = [dt if type(dt) == tuple else (dt, 1) for dt in els]
+
+    if len(button_presses) % 2 != 0:
         button_presses.append((end_watching, 0))
 
     last_timestamp, lights_on = None, set()
@@ -217,20 +247,20 @@ if __name__ == '__main__':
         datetime(2015, 1, 14, 0, 0, 0),
         (datetime(2015, 1, 15, 0, 0, 0), 2),
     ],
-                     start_watching=datetime(2015, 1, 10, 0, 0, 0),
-                     end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
+        start_watching=datetime(2015, 1, 10, 0, 0, 0),
+        end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
         datetime(2015, 1, 12, 10, 0, 10),
     ],
-                     operating=timedelta(seconds=100)) == 10
+        operating=timedelta(seconds=100)) == 10
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
         datetime(2015, 1, 12, 10, 0, 10),
     ],
-                     operating=timedelta(seconds=5)) == 5
+        operating=timedelta(seconds=5)) == 5
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
@@ -238,7 +268,7 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 0), 2),
         (datetime(2015, 1, 12, 10, 1, 0), 2),
     ],
-                     operating=timedelta(seconds=100)) == 60
+        operating=timedelta(seconds=100)) == 60
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
@@ -246,7 +276,7 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 2),
         (datetime(2015, 1, 12, 10, 1, 0), 2),
     ],
-                     operating=timedelta(seconds=100)) == 60
+        operating=timedelta(seconds=100)) == 60
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
@@ -254,7 +284,7 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 2),
         (datetime(2015, 1, 12, 10, 1, 0), 2),
     ],
-                     operating=timedelta(seconds=20)) == 40
+        operating=timedelta(seconds=20)) == 40
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -266,7 +296,7 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 1, 0), 3),
         (datetime(2015, 1, 12, 10, 1, 20), 3),
     ],
-                     operating=timedelta(seconds=10)) == 30
+        operating=timedelta(seconds=10)) == 30
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -278,8 +308,8 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 1, 20), 2),
         (datetime(2015, 1, 12, 10, 1, 40), 2),
     ],
-                     start_watching=datetime(2015, 1, 12, 10, 0, 20),
-                     operating=timedelta(seconds=100)) == 50
+        start_watching=datetime(2015, 1, 12, 10, 0, 20),
+        operating=timedelta(seconds=100)) == 50
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -291,8 +321,8 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 1, 20), 2),
         (datetime(2015, 1, 12, 10, 1, 40), 2),
     ],
-                     start_watching=datetime(2015, 1, 12, 10, 0, 20),
-                     operating=timedelta(seconds=10)) == 20
+        start_watching=datetime(2015, 1, 12, 10, 0, 20),
+        operating=timedelta(seconds=10)) == 20
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -300,9 +330,9 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 3),
         (datetime(2015, 1, 12, 10, 0, 30), 2),
     ],
-                     start_watching=datetime(2015, 1, 12, 10, 0, 10),
-                     end_watching=datetime(2015, 1, 12, 10, 0, 30),
-                     operating=timedelta(seconds=20)) == 20
+        start_watching=datetime(2015, 1, 12, 10, 0, 10),
+        end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=20)) == 20
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -310,9 +340,9 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 3),
         (datetime(2015, 1, 12, 10, 0, 30), 2),
     ],
-                     start_watching=datetime(2015, 1, 12, 10, 0, 10),
-                     end_watching=datetime(2015, 1, 12, 10, 0, 30),
-                     operating=timedelta(seconds=10)) == 20
+        start_watching=datetime(2015, 1, 12, 10, 0, 10),
+        end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=10)) == 20
 
     assert sum_light([
         (datetime(2015, 1, 12, 10, 0, 10), 3),
@@ -320,8 +350,8 @@ if __name__ == '__main__':
         (datetime(2015, 1, 12, 10, 0, 30), 3),
         (datetime(2015, 1, 12, 10, 0, 30), 2),
     ],
-                     start_watching=datetime(2015, 1, 12, 10, 0, 10),
-                     end_watching=datetime(2015, 1, 12, 10, 0, 30),
-                     operating=timedelta(seconds=5)) == 10
+        start_watching=datetime(2015, 1, 12, 10, 0, 10),
+        end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=5)) == 10
 
     print("OK")
