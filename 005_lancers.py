@@ -2,116 +2,93 @@ from collections import deque
 
 
 class Warrior:
-    def __init__(self):
-        self.health = 50
-        self.attack = 5
+    def __init__(self, health=50, attack=5):
+        self.health = health
+        self.attack = attack
 
     @property
     def is_alive(self):
         return self.health > 0
 
+    def calculate_damage(self, damage: int) -> int:
+        return damage
+
+    def decrease_health(self, damage: int):
+        self.health -= self.calculate_damage(damage)
+
+    def hit(self, victim):
+        victim.decrease_health(self.attack)
+
 
 class Knight(Warrior):
     def __init__(self):
-        super().__init__()
+        super().__init__(attack=7)
         self.attack = 7
 
 
 class Defender(Warrior):
     def __init__(self):
-        super().__init__()
-        self.health = 60
-        self.attack = 3
+        super().__init__(health=60, attack=3)
         self.defense = 2
 
-
-class Rookie(Warrior):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.health = 50
-        self.attack = 1
+    def calculate_damage(self, damage):
+        return max(0, damage - self.defense)
 
 
 class Vampire(Warrior):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.health = 40
-        self.attack = 4
-        self.vampirism = 50
+    def __init__(self):
+        super().__init__(health=40, attack=4)
+        self.vampirism = 0.5
+
+    def hit(self, victim: Warrior):
+        super().hit(victim)
+        self.health += int(victim.calculate_damage(self.attack) * self.vampirism)
 
 
 class Lancer(Warrior):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.health = 50
-        self.attack = 6
+    def __init__(self):
+        super().__init__(attack=6)
+
+
+def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
+    attacker, victim = unit_1, unit_2
+    while (attacker.is_alive and victim.is_alive):
+        attacker.hit(victim)
+        victim, attacker = attacker, victim
+    return unit_1.is_alive
 
 
 class Army:
     def __init__(self) -> None:
         self.units = deque()
 
-    def add_units(self, unit_type: Warrior, count: int):
-        for i in range(count):
-            self.units.append(unit_type())
+    def add_units(self, unit: Warrior, count: int):
+        for _ in range(count):
+            self.units.append(unit())
+
+    @property
+    def is_alive(self) -> bool:
+        """Does the army have a living warrior?"""
+        return len(self.units) > 0
+
+    @property
+    def warrior(self) -> Warrior:
+        """Return first alive warrior"""
+        return self.units[0] if self.units else None
+
+    def pop_dead(self):
+        """Pop a dead warrior out of the list."""
+        self.units.popleft()
 
 
 class Battle:
-    def fight(self, army1: Army, army2: Army):
-        unit11: Warrior = army1.units.popleft()
-        unit12 = None
-        unit21: Warrior = army2.units.popleft()
-        unit22 = None
-        while unit11 and unit21:
-            try:
-                if type(unit11) is Lancer and len(army2.units) > 0:
-                    unit22 = army2.units[0]
-                if type(unit21) is Lancer and len(army1.units) > 0:
-                    unit12 = army1.units[0]
-
-                if fight([unit11, unit12], [unit21, unit22]):
-                    unit21 = army2.units.popleft()
-                else:
-                    unit11 = army1.units.popleft()
-            except IndexError:
-                break
-
-        return unit11.is_alive
-
-
-def fight(warrior1, warrior2):
-
-    warrior12, warrior22 = None, None
-    if type(warrior1) is list:
-        warrior1, warrior12 = warrior1
-    if type(warrior2) is list:
-        warrior2, warrior22 = warrior2
-
-    while warrior1.is_alive and warrior2.is_alive:
-        defense = getattr(warrior2, 'defense', 0)
-        if defense > warrior1.attack:
-            continue
-        else:
-            dmg = (warrior1.attack - defense)
-            warrior2.health -= dmg
-            if type(warrior1) is Vampire:
-                warrior1.health += (dmg * warrior1.vampirism) // 100
-            if type(warrior1) is Lancer and warrior22 is not None:
-                warrior22.health -= int(dmg * 0.5)
-
-        if warrior2.is_alive:
-            defense = getattr(warrior1, 'defense', 0)
-            if defense > warrior2.attack:
-                continue
+    def fight(self, army_1: Army, army_2: Army):
+        while army_1.is_alive and army_2.is_alive:
+            if fight(army_1.warrior, army_2.warrior):
+                army_2.pop_dead()
             else:
-                dmg = (warrior2.attack - defense)
-                warrior1.health -= dmg
-                if type(warrior2) is Vampire:
-                    warrior2.health += (dmg * warrior2.vampirism) // 100
-                if type(warrior2) is Lancer and warrior12 is not None:
-                    warrior12.health -= int(dmg * 0.5)
-
-    return warrior1.is_alive
+                army_1.pop_dead()
+        return army_1.is_alive
 
 
 if __name__ == '__main__':
