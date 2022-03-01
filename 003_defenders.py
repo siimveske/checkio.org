@@ -2,78 +2,80 @@ from collections import deque
 
 
 class Warrior:
-    def __init__(self):
-        self.health = 50
-        self.attack = 5
+    def __init__(self, health=50, attack=5):
+        self.health = health
+        self.attack = attack
 
     @property
     def is_alive(self):
         return self.health > 0
 
+    def decrease_health(self, damage):
+        self.health -= damage
+
+    def hit(self, victim):
+        victim.decrease_health(self.attack)
+
 
 class Knight(Warrior):
     def __init__(self):
-        super().__init__()
+        super().__init__(attack=7)
         self.attack = 7
 
 
 class Defender(Warrior):
     def __init__(self):
-        super().__init__()
-        self.health = 60
-        self.attack = 3
+        super().__init__(health=60, attack=3)
         self.defense = 2
+
+    def decrease_health(self, damage):
+        self.health -= max(0, damage - self.defense)
 
 
 class Rookie(Warrior):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.health = 50
-        self.attack = 1
+    def __init__(self):
+        super().__init__(health=50, attack=1)
 
 
-def fight(warrior1: Warrior, warrior2: Warrior):
-
-    while warrior1.is_alive and warrior2.is_alive:
-        defense = getattr(warrior2, 'defense', 0)
-        if defense > warrior1.attack:
-            continue
-        else:
-            warrior2.health -= (warrior1.attack - defense)
-
-        if warrior2.is_alive:
-            defense = getattr(warrior1, 'defense', 0)
-            if defense > warrior2.attack:
-                continue
-            else:
-                warrior1.health -= (warrior2.attack - defense)
-
-    return warrior1.is_alive
+def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
+    attacker, victim = unit_1, unit_2
+    while (attacker.is_alive and victim.is_alive):
+        attacker.hit(victim)
+        victim, attacker = attacker, victim
+    return unit_1.is_alive
 
 
 class Army:
     def __init__(self) -> None:
         self.units = deque()
 
-    def add_units(self, unit_type: Warrior, count: int):
-        for i in range(count):
-            self.units.append(unit_type())
+    def add_units(self, unit: Warrior, count: int):
+        for _ in range(count):
+            self.units.append(unit())
+
+    @property
+    def is_alive(self) -> bool:
+        """Does the army have a living warrior?"""
+        return len(self.units) > 0
+
+    @property
+    def warrior(self):
+        """Return first alive warrior"""
+        return self.units[0] if self.units else None
+
+    def pop_dead(self):
+        """Pop a dead warrior out of the list."""
+        self.units.popleft()
 
 
 class Battle:
-    def fight(self, army1: Army, army2: Army):
-        unit1: Warrior = army1.units.popleft()
-        unit2: Warrior = army2.units.popleft()
-        while unit1 and unit2:
-            try:
-                if fight(unit1, unit2):
-                    unit2 = army2.units.popleft()
-                else:
-                    unit1 = army1.units.popleft()
-            except IndexError:
-                break
-
-        return unit1.is_alive
+    def fight(self, army_1: Army, army_2: Army):
+        while army_1.is_alive and army_2.is_alive:
+            if fight(army_1.warrior, army_2.warrior):
+                army_2.pop_dead()
+            else:
+                army_1.pop_dead()
+        return army_1.is_alive
 
 
 if __name__ == '__main__':
