@@ -7,6 +7,12 @@ class Warrior:
     def is_alive(self):
         return self.health > 0
 
+    def decrease_health(self, damage):
+        self.health -= damage
+
+    def hit(self, victim):
+        victim.decrease_health(self.attack)
+
 
 class Knight(Warrior):
     def __init__(self):
@@ -14,14 +20,15 @@ class Knight(Warrior):
         self.attack = 7
 
 
-def fight(warrior1: Warrior, warrior2: Warrior):
+def fight(unit_1: Warrior, unit_2: Warrior):
 
-    while warrior1.is_alive and warrior2.is_alive:
-        warrior2.health -= warrior1.attack
-        if warrior2.is_alive:
-            warrior1.health -= warrior2.attack
+    attacker, victim = unit_1, unit_2
 
-    return warrior1.is_alive
+    while (attacker.is_alive and victim.is_alive):
+        attacker.hit(victim)
+        victim, attacker = attacker, victim
+
+    return unit_1.is_alive
 
 
 if __name__ == '__main__':
