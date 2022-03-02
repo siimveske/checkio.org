@@ -20,16 +20,6 @@ class Warrior:
     def hit(self, victim):
         victim.decrease_health(self.attack)
 
-    def next(self):
-        if not self.army:
-            return None
-
-        try:
-            idx = self.army.units.index(self)
-            return self.army.units[idx + 1]
-        except (ValueError, IndexError) as e:
-            return None
-
 
 class Knight(Warrior):
     def __init__(self, *args, **kwargs):
@@ -63,9 +53,10 @@ class Lancer(Warrior):
 
     def hit(self, victim: Warrior):
         super().hit(victim)
-        next = victim.next()
-        if next:
-            self.hit_with_splash(next)
+        if victim.army:
+            unit = victim.army.next_warrior(victim)
+            if unit:
+                self.hit_with_splash(unit)
 
     def hit_with_splash(self, victim: Warrior):
         victim.decrease_health(self.splash)
@@ -89,26 +80,37 @@ class Army:
 
     @property
     def is_alive(self) -> bool:
-        """Does the army have a living warrior?"""
+        """Does the army have any units?"""
         return len(self.units) > 0
 
     @property
     def warrior(self) -> Warrior:
-        """Return first alive warrior"""
-        return self.units[0] if self.units else None
+        """Return the first army unit"""
+        if self.units:
+            return self.units[0]
+        else:
+            return None
 
-    def pop_dead(self):
-        """Pop a dead warrior out of the list."""
+    def pop_warrior(self):
+        """Pop unit out of the army list"""
         self.units.popleft()
+
+    def next_warrior(self, unit):
+        """Return unit's neighbor unit"""
+        try:
+            idx = self.units.index(unit)
+            return self.units[idx + 1]
+        except (ValueError, IndexError) as e:
+            return None
 
 
 class Battle:
     def fight(self, army_1: Army, army_2: Army):
         while army_1.is_alive and army_2.is_alive:
             if fight(army_1.warrior, army_2.warrior):
-                army_2.pop_dead()
+                army_2.pop_warrior()
             else:
-                army_1.pop_dead()
+                army_1.pop_warrior()
         return army_1.is_alive
 
 
