@@ -148,22 +148,9 @@ class Battle:
     def straight_fight(self, army_1: Army, army_2: Army) -> bool:
         army_1.duel = True
         army_2.duel = True
-
         while army_1.is_alive and army_2.is_alive:
-            idx, fight_length = 0, min(army_1.size, army_2.size)
-            while idx < fight_length:
-                attacker, victim = army_1.units[idx], army_2.units[idx]
-                if attacker.is_alive:
-                    attacker.hit(victim)
-                idx += 1
-
-            idx = 0
-            while idx < fight_length:
-                attacker, victim = army_1.units[idx], army_2.units[idx]
-                if victim.is_alive:
-                    victim.hit(attacker)
-                idx += 1
-
+            for attacker, victim in zip(army_1.units, army_2.units):
+                fight(attacker, victim)
             army_1.pop_dead()
             army_2.pop_dead()
 
