@@ -3,10 +3,10 @@ from collections import deque
 
 class Warrior:
     def __init__(self, health=50, attack=5, army=None):
-        self._max_health = health
-        self.health = health
-        self.attack = attack
-        self.army = army
+        self.MAX_HP: int = health
+        self.health: int = health
+        self.attack: int = attack
+        self.army: Army = army
 
     @property
     def is_alive(self):
@@ -19,18 +19,23 @@ class Warrior:
         self.health = max(0, self.health - amount)
 
     def increase_health(self, amount: int):
-        self.health = min(self._max_health, self.health + amount)
+        self.health = min(self.MAX_HP, self.health + amount)
 
     def hit(self, victim):
         damage = victim.calculate_damage(self.attack)
         victim.decrease_health(damage)
 
-        if self.army:
-            next_warrior = self.army.next_warrior(self)
-            if type(next_warrior) is Healer:
-                next_warrior.heal(self)
+        if type(self.next_warrior) is Healer:
+            self.next_warrior.heal(self)
 
         return damage
+
+    @property
+    def next_warrior(self):
+        if self.army:
+            return self.army.next_warrior(self)
+        else:
+            return None
 
 
 class Knight(Warrior):
@@ -66,18 +71,17 @@ class Lancer(Warrior):
 
     def hit(self, victim: Warrior):
         super().hit(victim)
-        if victim.army:
-            if next_warrior := victim.army.next_warrior(victim):
-                next_warrior.decrease_health(self.splash)
+        if next_warrior := victim.next_warrior:
+            next_warrior.decrease_health(self.splash)
 
 
 class Healer(Warrior):
     def __init__(self, *args, **kwargs):
         super().__init__(health=60, attack=0, *args, **kwargs)
-        self.heal_amount = 2
+        self.heal_rate = 2
 
     def heal(self, unit: Warrior):
-        unit.increase_health(self.heal_amount)
+        unit.increase_health(self.heal_rate)
 
 
 def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
@@ -92,9 +96,9 @@ class Army:
     def __init__(self) -> None:
         self.units = deque()
 
-    def add_units(self, unit_class, count):
+    def add_units(self, unit, count):
         for _ in range(count):
-            self.units.append(unit_class(army=self))
+            self.units.append(unit(army=self))
 
     @property
     def is_alive(self) -> bool:
