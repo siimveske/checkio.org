@@ -16,7 +16,7 @@ class Warrior:
         return damage
 
     def decrease_health(self, amount: int):
-        self.health -= amount
+        self.health = max(0, self.health - amount)
 
     def increase_health(self, amount: int):
         self.health = min(self._max_health, self.health + amount)
@@ -24,6 +24,11 @@ class Warrior:
     def hit(self, victim):
         damage = victim.calculate_damage(self.attack)
         victim.decrease_health(damage)
+
+        if self.army:
+            if (next_warrior := self.army.next_warrior(self)) and (next_warrior is Healer):
+                next_warrior.heal(self)
+
         return damage
 
 
@@ -61,20 +66,17 @@ class Lancer(Warrior):
     def hit(self, victim: Warrior):
         super().hit(victim)
         if victim.army:
-            unit = victim.army.next_warrior(victim)
-            if unit:
-                self.hit_with_splash(unit)
-
-    def hit_with_splash(self, victim: Warrior):
-        victim.decrease_health(self.splash)
+            if next_warrior := victim.army.next_warrior(victim):
+                next_warrior.decrease_health(self.splash)
 
 
 class Healer(Warrior):
     def __init__(self, *args, **kwargs):
         super().__init__(health=60, attack=0, *args, **kwargs)
+        self.heal_amount = 2
 
-    def heal(unit):
-        pass
+    def heal(self, unit: Warrior):
+        unit.increase_health(self.heal_amount)
 
 
 def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
@@ -132,73 +134,83 @@ class Battle:
 if __name__ == '__main__':
 
     # fight tests
-    chuck = Warrior()
-    bruce = Warrior()
-    carl = Knight()
-    dave = Warrior()
-    mark = Warrior()
-    bob = Defender()
-    mike = Knight()
-    rog = Warrior()
-    lancelot = Defender()
-    eric = Vampire()
-    adam = Vampire()
-    richard = Defender()
-    ogre = Warrior()
-    freelancer = Lancer()
-    vampire = Vampire()
-    priest = Healer()
+    # chuck = Warrior()
+    # bruce = Warrior()
+    # carl = Knight()
+    # dave = Warrior()
+    # mark = Warrior()
+    # bob = Defender()
+    # mike = Knight()
+    # rog = Warrior()
+    # lancelot = Defender()
+    # eric = Vampire()
+    # adam = Vampire()
+    # richard = Defender()
+    # ogre = Warrior()
+    # freelancer = Lancer()
+    # vampire = Vampire()
+    # priest = Healer()
 
-    assert fight(chuck, bruce) == True
-    assert fight(dave, carl) == False
-    assert chuck.is_alive == True
-    assert bruce.is_alive == False
-    assert carl.is_alive == True
-    assert dave.is_alive == False
-    assert fight(carl, mark) == False
-    assert carl.is_alive == False
-    assert fight(bob, mike) == False
-    assert fight(lancelot, rog) == True
-    assert fight(eric, richard) == False
-    assert fight(ogre, adam) == True
-    assert fight(freelancer, vampire) == True
-    assert freelancer.is_alive == True
-    assert freelancer.health == 14
-    priest.heal(freelancer)
-    assert freelancer.health == 16
+    # assert fight(chuck, bruce) == True
+    # assert fight(dave, carl) == False
+    # assert chuck.is_alive == True
+    # assert bruce.is_alive == False
+    # assert carl.is_alive == True
+    # assert dave.is_alive == False
+    # assert fight(carl, mark) == False
+    # assert carl.is_alive == False
+    # assert fight(bob, mike) == False
+    # assert fight(lancelot, rog) == True
+    # assert fight(eric, richard) == False
+    # assert fight(ogre, adam) == True
+    # assert fight(freelancer, vampire) == True
+    # assert freelancer.is_alive == True
+    # assert freelancer.health == 14
+    # priest.heal(freelancer)
+    # assert freelancer.health == 16
 
-    # battle tests
-    my_army = Army()
-    my_army.add_units(Defender, 2)
-    my_army.add_units(Healer, 1)
-    my_army.add_units(Vampire, 2)
-    my_army.add_units(Lancer, 2)
-    my_army.add_units(Healer, 1)
-    my_army.add_units(Warrior, 1)
+    # # battle tests
+    # my_army = Army()
+    # my_army.add_units(Defender, 2)
+    # my_army.add_units(Healer, 1)
+    # my_army.add_units(Vampire, 2)
+    # my_army.add_units(Lancer, 2)
+    # my_army.add_units(Healer, 1)
+    # my_army.add_units(Warrior, 1)
 
-    enemy_army = Army()
-    enemy_army.add_units(Warrior, 2)
-    enemy_army.add_units(Lancer, 4)
-    enemy_army.add_units(Healer, 1)
-    enemy_army.add_units(Defender, 2)
-    enemy_army.add_units(Vampire, 3)
-    enemy_army.add_units(Healer, 1)
+    # enemy_army = Army()
+    # enemy_army.add_units(Warrior, 2)
+    # enemy_army.add_units(Lancer, 4)
+    # enemy_army.add_units(Healer, 1)
+    # enemy_army.add_units(Defender, 2)
+    # enemy_army.add_units(Vampire, 3)
+    # enemy_army.add_units(Healer, 1)
 
-    army_3 = Army()
-    army_3.add_units(Warrior, 1)
-    army_3.add_units(Lancer, 1)
-    army_3.add_units(Healer, 1)
-    army_3.add_units(Defender, 2)
+    # army_3 = Army()
+    # army_3.add_units(Warrior, 1)
+    # army_3.add_units(Lancer, 1)
+    # army_3.add_units(Healer, 1)
+    # army_3.add_units(Defender, 2)
 
-    army_4 = Army()
-    army_4.add_units(Vampire, 3)
-    army_4.add_units(Warrior, 1)
-    army_4.add_units(Healer, 1)
-    army_4.add_units(Lancer, 2)
+    # army_4 = Army()
+    # army_4.add_units(Vampire, 3)
+    # army_4.add_units(Warrior, 1)
+    # army_4.add_units(Healer, 1)
+    # army_4.add_units(Lancer, 2)
+
+    # battle = Battle()
+
+    # assert battle.fight(my_army, enemy_army) == False
+    # assert battle.fight(army_3, army_4) == True
+
+    army_1 = Army()
+    army_1.add_units(Lancer, 1)
+
+    army_2 = Army()
+    army_2.add_units(Warrior, 1)
+    army_2.add_units(Healer, 1)
 
     battle = Battle()
-
-    assert battle.fight(my_army, enemy_army) == False
-    assert battle.fight(army_3, army_4) == True
+    assert battle.fight(army_1, army_2) == False
 
     print("OK")
