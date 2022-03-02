@@ -2,9 +2,10 @@ from collections import deque
 
 
 class Warrior:
-    def __init__(self, health=50, attack=5):
+    def __init__(self, health=50, attack=5, army=None):
         self.health = health
         self.attack = attack
+        self.army = army
 
     @property
     def is_alive(self):
@@ -19,16 +20,26 @@ class Warrior:
     def hit(self, victim):
         victim.decrease_health(self.attack)
 
+    def next(self):
+        if not self.army:
+            return None
+
+        try:
+            idx = self.army.units.index(self)
+            return self.army.units[idx + 1]
+        except (ValueError, IndexError) as e:
+            return None
+
 
 class Knight(Warrior):
-    def __init__(self):
-        super().__init__(attack=7)
+    def __init__(self, *args, **kwargs):
+        super().__init__(attack=7, *args, **kwargs)
         self.attack = 7
 
 
 class Defender(Warrior):
-    def __init__(self):
-        super().__init__(health=60, attack=3)
+    def __init__(self, *args, **kwargs):
+        super().__init__(health=60, attack=3, *args, **kwargs)
         self.defense = 2
 
     def calculate_damage(self, damage):
@@ -36,8 +47,8 @@ class Defender(Warrior):
 
 
 class Vampire(Warrior):
-    def __init__(self):
-        super().__init__(health=40, attack=4)
+    def __init__(self, *args, **kwargs):
+        super().__init__(health=40, attack=4, *args, **kwargs)
         self.vampirism = 0.5
 
     def hit(self, victim: Warrior):
@@ -46,8 +57,18 @@ class Vampire(Warrior):
 
 
 class Lancer(Warrior):
-    def __init__(self):
-        super().__init__(attack=6)
+    def __init__(self, *args, **kwargs):
+        super().__init__(attack=6, *args, **kwargs)
+        self.splash = int(self.attack * 0.5)
+
+    def hit(self, victim: Warrior):
+        super().hit(victim)
+        next = victim.next()
+        if next:
+            self.hit_with_splash(next)
+
+    def hit_with_splash(self, victim: Warrior):
+        victim.decrease_health(self.splash)
 
 
 def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
@@ -62,9 +83,9 @@ class Army:
     def __init__(self) -> None:
         self.units = deque()
 
-    def add_units(self, unit: Warrior, count: int):
+    def add_units(self, unit_class, count):
         for _ in range(count):
-            self.units.append(unit())
+            self.units.append(unit_class(army=self))
 
     @property
     def is_alive(self) -> bool:
