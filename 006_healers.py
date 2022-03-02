@@ -3,6 +3,7 @@ from collections import deque
 
 class Warrior:
     def __init__(self, health=50, attack=5, army=None):
+        self._max_health = health
         self.health = health
         self.attack = attack
         self.army = army
@@ -14,11 +15,16 @@ class Warrior:
     def calculate_damage(self, damage: int) -> int:
         return damage
 
-    def decrease_health(self, damage: int):
-        self.health -= self.calculate_damage(damage)
+    def decrease_health(self, amount: int):
+        self.health -= amount
+
+    def increase_health(self, amount: int):
+        self.health = min(self._max_health, self.health + amount)
 
     def hit(self, victim):
-        victim.decrease_health(self.attack)
+        damage = victim.calculate_damage(self.attack)
+        victim.decrease_health(damage)
+        return damage
 
 
 class Knight(Warrior):
@@ -42,8 +48,9 @@ class Vampire(Warrior):
         self.vampirism = 0.5
 
     def hit(self, victim: Warrior):
-        super().hit(victim)
-        self.health += int(victim.calculate_damage(self.attack) * self.vampirism)
+        damage = super().hit(victim)
+        health = int(damage * self.vampirism)
+        self.increase_health(health)
 
 
 class Lancer(Warrior):
@@ -65,6 +72,9 @@ class Lancer(Warrior):
 class Healer(Warrior):
     def __init__(self, *args, **kwargs):
         super().__init__(health=60, attack=0, *args, **kwargs)
+
+    def heal(unit):
+        pass
 
 
 def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
