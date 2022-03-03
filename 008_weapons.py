@@ -26,8 +26,8 @@ class GreatAxe(Weapon):
 
 
 class Katana(Weapon):
-    def __init__(self, health=30, attack=3, heal_power=3):
-        super().__init__(health=health, attack=attack, heal_power=heal_power)
+    def __init__(self, health=-20, attack=6, defense=-5, vampirism=50):
+        super().__init__(health=health, attack=attack, defense=defense, vampirism=vampirism)
 
 
 class MagicWand(Weapon):
@@ -57,15 +57,14 @@ class Warrior:
     def calculate_damage(self, damage: int) -> int:
         return damage
 
-    def decrease_health(self, amount: int):
-        self.health = max(0, self.health - amount)
-
-    def increase_health(self, amount: int):
-        self.health = min(self.max_health, self.health + amount)
+    def update_health(self, health, max_health=None):
+        if max_health:
+            self.max_health = max(0, self.max_health + max_health)
+        self.health = max(0, min(self.max_health, self.health + health))
 
     def hit(self, victim):
         damage = victim.calculate_damage(self.attack)
-        victim.decrease_health(damage)
+        victim.update_health(-damage)
 
         if type(self.next_warrior) is Healer:
             self.next_warrior.heal(self)
@@ -78,12 +77,11 @@ class Warrior:
             if key not in vars(self):
                 continue
             if key == 'health':
-                self.max_health = max(0, self.max_health + val)
-                self.health = max(0, min(self.max_health, self.health + val))
+                self.update_health(health=val, max_health=val)
             elif key == 'attack':
                 self.attack = max(0, self.attack + val)
-            elif key == 'defence':
-                self.defence = max(0, self.defence + val)
+            elif key == 'defense':
+                self.defense = max(0, self.defense + val)
             elif key == 'vampirism':
                 self.vampirism = max(0, self.vampirism + val)
             elif key == 'heal_power':
@@ -112,7 +110,7 @@ class Vampire(Warrior):
     def hit(self, victim: Warrior):
         damage = super().hit(victim)
         health = (damage * self.vampirism) // 100
-        self.increase_health(health)
+        self.update_health(health)
 
 
 class Lancer(Warrior):
@@ -124,7 +122,7 @@ class Lancer(Warrior):
         super().hit(victim)
         if next_warrior := victim.next_warrior:
             damage = (self.attack * self.splash) // 100
-            next_warrior.decrease_health(damage)
+            next_warrior.update_health(-damage)
 
 
 class Healer(Warrior):
@@ -133,7 +131,7 @@ class Healer(Warrior):
         self.heal_power = heal_power
 
     def heal(self, unit: Warrior):
-        unit.increase_health(self.heal_power)
+        unit.update_health(self.heal_power)
 
 
 class Army:
@@ -266,5 +264,25 @@ if __name__ == '__main__':
     battle = Battle()
 
     battle.fight(my_army, enemy_army) == True
+
+    # 7. Weapon/0
+    weapon_1 = Katana()
+    weapon_2 = Shield()
+
+    my_army = Army()
+    my_army.add_units(Defender, 2)
+
+    enemy_army = Army()
+    enemy_army.add_units(Knight, 1)
+    enemy_army.add_units(Vampire, 1)
+
+    my_army.units[0].equip_weapon(weapon_1)
+    my_army.units[1].equip_weapon(weapon_1)
+
+    enemy_army.units[0].equip_weapon(weapon_1)
+    enemy_army.units[1].equip_weapon(weapon_1)
+
+    battle = Battle()
+    assert battle.fight(my_army, enemy_army) == False
 
     print("OK")
