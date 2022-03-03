@@ -130,13 +130,24 @@ class Healer(Warrior):
         unit.update_health(self.heal_power)
 
 
+class Warlord(Defender):
+    def __init__(self, health=100, attack=4, *args, **kwargs):
+        super().__init__(health=health, attack=attack, *args, **kwargs)
+
+
 class Army:
     def __init__(self) -> None:
         self.units = deque()
         self.duel = False
+        self.has_warlord = False
 
     def add_units(self, unit, count):
         for _ in range(count):
+            if type(unit) is Warlord:
+                if self.has_warlord:
+                    break
+                else:
+                    self.has_warlord = True
             self.units.append(unit(army=self))
 
     @property
@@ -174,6 +185,9 @@ class Army:
     def pop_dead(self):
         self.units = [unit for unit in self.units if unit.is_alive]
 
+    def move_units():
+        pass
+
 
 class Battle:
     def fight(self, army_1: Army, army_2: Army) -> bool:
@@ -206,79 +220,39 @@ def fight(unit_1: Warrior, unit_2: Warrior) -> bool:
 
 if __name__ == '__main__':
 
-    # fight tests
-    ogre = Warrior()
-    lancelot = Knight()
-    richard = Defender()
-    eric = Vampire()
-    freelancer = Lancer()
-    priest = Healer()
+    ronald = Warlord()
+    heimdall = Knight()
 
-    sword = Sword()
-    shield = Shield()
-    axe = GreatAxe()
-    katana = Katana()
-    wand = MagicWand()
-    super_weapon = Weapon(50, 10, 5, 150, 8)
-
-    ogre.equip_weapon(sword)
-    ogre.equip_weapon(shield)
-    ogre.equip_weapon(super_weapon)
-    lancelot.equip_weapon(super_weapon)
-    richard.equip_weapon(shield)
-    eric.equip_weapon(super_weapon)
-    freelancer.equip_weapon(axe)
-    freelancer.equip_weapon(katana)
-    priest.equip_weapon(wand)
-    priest.equip_weapon(shield)
-
-    ogre.health == 125
-    lancelot.attack == 17
-    richard.defense == 4
-    eric.vampirism == 200
-    freelancer.health == 15
-    priest.heal_power == 5
-
-    fight(ogre, eric) == False
-    fight(priest, richard) == False
-    fight(lancelot, freelancer) == True
+    fight(heimdall, ronald) == False
 
     my_army = Army()
-    my_army.add_units(Knight, 1)
-    my_army.add_units(Lancer, 1)
+    my_army.add_units(Warlord, 1)
+    my_army.add_units(Warrior, 2)
+    my_army.add_units(Lancer, 2)
+    my_army.add_units(Healer, 2)
 
     enemy_army = Army()
+    enemy_army.add_units(Warlord, 3)
     enemy_army.add_units(Vampire, 1)
-    enemy_army.add_units(Healer, 1)
+    enemy_army.add_units(Healer, 2)
+    enemy_army.add_units(Knight, 2)
 
-    my_army.units[0].equip_weapon(axe)
-    my_army.units[1].equip_weapon(super_weapon)
+    my_army.move_units()
+    enemy_army.move_units()
 
-    enemy_army.units[0].equip_weapon(katana)
-    enemy_army.units[1].equip_weapon(wand)
+    type(my_army.units[0]) == Lancer
+    type(my_army.units[1]) == Healer
+    type(my_army.units[-1]) == Warlord
+
+    type(enemy_army.units[0]) == Vampire
+    type(enemy_army.units[-1]) == Warlord
+    type(enemy_army.units[-2]) == Knight
+
+    # 6, not 8, because only 1 Warlord per army could be
+    len(enemy_army.units) == 6
 
     battle = Battle()
 
     battle.fight(my_army, enemy_army) == True
-
-    # 7. Weapon/0
-    weapon_1 = Katana()
-    weapon_2 = Shield()
-
-    my_army = Army()
-    my_army.add_units(Defender, 2)
-
-    enemy_army = Army()
-    enemy_army.add_units(Knight, 1)
-    enemy_army.add_units(Vampire, 1)
-
-    my_army.units[0].equip_weapon(weapon_1)
-    my_army.units[1].equip_weapon(weapon_1)
-
-    enemy_army.units[0].equip_weapon(weapon_1)
-    enemy_army.units[1].equip_weapon(weapon_1)
-
-    battle = Battle()
-    assert battle.fight(my_army, enemy_army) == False
 
     print("OK")
