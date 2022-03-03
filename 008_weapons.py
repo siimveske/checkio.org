@@ -78,14 +78,10 @@ class Warrior:
                 continue
             if key == 'health':
                 self.update_health(health=val, max_health=val)
-            elif key == 'attack':
-                self.attack = max(0, self.attack + val)
-            elif key == 'defense':
-                self.defense = max(0, self.defense + val)
-            elif key == 'vampirism':
-                self.vampirism = max(0, self.vampirism + val)
-            elif key == 'heal_power':
-                self.heal_power = max(0, self.heal_power + val)
+            else:
+                cur_val = getattr(self, key)
+                new_val = max(0, cur_val + val)
+                setattr(self, key, new_val)
 
 
 class Knight(Warrior):
