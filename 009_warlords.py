@@ -142,13 +142,13 @@ class Army:
         self.has_warlord = False
 
     def add_units(self, unit, count):
-        for _ in range(count):
-            if type(unit) is Warlord:
-                if self.has_warlord:
-                    break
-                else:
-                    self.has_warlord = True
-            self.units.append(unit(army=self))
+        if type(unit) is Warlord:
+            if not self.has_warlord:
+                self.units.append(unit(army=self))
+                self.has_warlord = True
+        else:
+            for _ in range(count):
+                self.units.append(unit(army=self))
 
     @property
     def is_alive(self) -> bool:
@@ -185,17 +185,44 @@ class Army:
     def pop_dead(self):
         self.units = [unit for unit in self.units if unit.is_alive]
 
-    def move_units():
-        pass
+    def move_units(self):
+        if not self.has_warlord:
+            return
+
+        lancers = []
+        healers = []
+        warlord = []
+        others = []
+
+        for unit in self.units:
+            if type(unit) is Lancer:
+                lancers.append(unit)
+            elif type(unit) is Healer:
+                healers.append(unit)
+            elif type(unit) is Warlord:
+                warlord.append(unit)
+            else:
+                others.append(unit)
+
+        if lancers:
+            sorted_units = lancers[:1] + healers + lancers[1:] + others + warlord
+        else:
+            sorted_units = others[:1] + healers + others[1:] + warlord
+
+        self.units = sorted_units
 
 
 class Battle:
     def fight(self, army_1: Army, army_2: Army) -> bool:
+        army_1.move_units()
+        army_2.move_units()
         while army_1.is_alive and army_2.is_alive:
             if fight(army_1.warrior, army_2.warrior):
                 army_2.pop_warrior()
+                army_2.move_units()
             else:
                 army_1.pop_warrior()
+                army_1.move_units()
         return army_1.is_alive
 
     def straight_fight(self, army_1: Army, army_2: Army) -> bool:
@@ -254,5 +281,25 @@ if __name__ == '__main__':
     battle = Battle()
 
     battle.fight(my_army, enemy_army) == True
+
+    # 24. Battle/0
+    army_1 = Army()
+    army_2 = Army()
+
+    army_1.add_units(Warrior, 2)
+    army_1.add_units(Lancer, 2)
+    army_1.add_units(Defender, 1)
+    army_1.add_units(Warlord, 3)
+
+    army_2.add_units(Warlord, 2)
+    army_2.add_units(Vampire, 1)
+    army_2.add_units(Healer, 5)
+    army_2.add_units(Knight, 2)
+
+    army_1.move_units()
+    army_2.move_units()
+
+    battle = Battle()
+    assert battle.fight(army_1, army_2) == False
 
     print("OK")
