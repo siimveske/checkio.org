@@ -142,7 +142,7 @@ class Army:
         self.has_warlord = False
 
     def add_units(self, unit, count):
-        if type(unit) is Warlord:
+        if unit is Warlord:
             if not self.has_warlord:
                 self.units.append(unit(army=self))
                 self.has_warlord = True
@@ -209,7 +209,7 @@ class Army:
         else:
             sorted_units = others[:1] + healers + others[1:] + warlord
 
-        self.units = sorted_units
+        self.units = deque(sorted_units)
 
 
 class Battle:
