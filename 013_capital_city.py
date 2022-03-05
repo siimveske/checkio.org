@@ -1,15 +1,8 @@
 class Capital:
-
-    _instance = None
-
-    def __new__(cls, city_name):
-        if not isinstance(cls._instance, cls):
-            cls._instance = super().__new__(cls)
-            cls._instance._name = city_name
-        return cls._instance
-
-    def name(self):
-        return self._name
+    def __new__(cls, name):
+        if not hasattr(cls, 'name'):
+            cls.name = lambda: name
+        return cls
 
 
 if __name__ == '__main__':
