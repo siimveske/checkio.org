@@ -5,13 +5,15 @@ class Building:
         self.width_WE = width_WE
         self.width_NS = width_NS
         self.height = height
+        self.north = south + width_NS
+        self.east = west + width_WE
 
     def corners(self):
         return {
-            "north-west": [self.south + self.width_NS, self.west],
-            "north-east": [self.south + self.width_NS, self.west + self.width_WE],
+            "north-west": [self.north, self.west],
+            "north-east": [self.north, self.east],
             "south-west": [self.south, self.west],
-            "south-east": [self.south, self.west + self.width_WE]
+            "south-east": [self.south, self.east]
         }
 
     def area(self):
