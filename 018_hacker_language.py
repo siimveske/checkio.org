@@ -21,7 +21,22 @@ class HackerLanguage:
         return ''.join(buffer)
 
     def read(self, text):
-        pass
+        buffer = []
+        parts = text.split('1000000')
+        for part in parts:
+            idx = 0
+            step = 7
+            while idx < len(part):
+                slice = part[idx:idx + step]
+                try:
+                    letter = chr(int(slice, 2))
+                    buffer.append(letter)
+                    idx += step
+                except ValueError:
+                    buffer.append(part[idx])
+                    idx += 1
+            buffer.append(' ')
+        return ''.join(buffer).strip()
 
 
 if __name__ == '__main__':
@@ -41,5 +56,8 @@ if __name__ == '__main__':
 
     message_2 = HackerLanguage()
     assert message_2.read("11001011101101110000111010011101100") == "email"
+
+    message_2 = HackerLanguage()
+    message_2.read('10011011111001100000011001011101101110000111010011101100100000011010011110011100000011011011110010.11100101101111110001011011111110100@11001111101101110000111010011101100.110001111011111101101') == 'My email is mr.robot@gmail.com'
 
     print("OK")
