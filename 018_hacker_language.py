@@ -1,3 +1,6 @@
+import re
+
+
 class HackerLanguage:
     def __init__(self):
         self.text = []
@@ -7,7 +10,7 @@ class HackerLanguage:
             self.text.append(i)
 
     def delete(self, idx):
-        self.text = self.text[0:-idx]
+        self.text = self.text[:-idx]
 
     def send(self):
         buffer = []
@@ -15,28 +18,17 @@ class HackerLanguage:
             if i == ' ':
                 buffer.append('1000000')
             elif i.isalpha():
-                buffer.append(bin(ord(i))[2:])
+                buffer.append(format(ord(i), 'b'))
             else:
                 buffer.append(i)
         return ''.join(buffer)
 
+    def convert(self, matchobj):
+        code = matchobj[0]
+        return chr(int(code, 2)) if code != '1000000' else ' '
+
     def read(self, text):
-        buffer = []
-        parts = text.split('1000000')
-        for part in parts:
-            idx = 0
-            step = 7
-            while idx < len(part):
-                slice = part[idx:idx + step]
-                try:
-                    letter = chr(int(slice, 2))
-                    buffer.append(letter)
-                    idx += step
-                except ValueError:
-                    buffer.append(part[idx])
-                    idx += 1
-            buffer.append(' ')
-        return ''.join(buffer).strip()
+        return re.sub(r'[01]{7}', self.convert, text)
 
 
 if __name__ == '__main__':
