@@ -1,6 +1,10 @@
 import math
 
 
+def rounded(f):
+    return lambda x: round(f(x), 2)
+
+
 class Parameters:
     def __init__(self, param):
         self.param = param
@@ -10,83 +14,72 @@ class Parameters:
         figure.param = self.param
         self.figure = figure
 
+    @rounded
     def perimeter(self):
         return self.figure.perimeter(self.param)
 
+    @rounded
     def area(self):
         return self.figure.area(self.param)
 
+    @rounded
     def volume(self):
         return self.figure.volume(self.param)
 
 
-class Circle:
+class Figure2D:
+    def volume(*_):
+        return 0
+
+    def perimeter(self, side_length):
+        return self.sides * side_length
+
+
+class Circle(Figure2D):
     def perimeter(self, radius):
-        return round(2 * math.pi * radius, 2)
+        return 2 * math.pi * radius
 
     def area(self, radius):
-        return round(math.pi * radius**2, 2)
-
-    def volume(self, *args, **kwargs):
-        return 0
+        return math.pi * radius**2
 
 
-class Triangle:
-    def perimeter(self, side):
-        return round(3 * side, 2)
+class Triangle(Figure2D):
+    sides = 3
 
     def area(self, side):
-        result = (math.sqrt(3.0) / 4.0) * side**2
-        return round(result, 2)
-
-    def volume(self, *args, **kwargs):
-        return 0
+        return (math.sqrt(3.0) / 4.0) * side**2
 
 
-class Square:
-    def perimeter(self, side):
-        return round(4 * side, 2)
+class Square(Figure2D):
+    sides = 4
 
     def area(self, side):
-        return round(side**2, 2)
-
-    def volume(self, *args, **kwargs):
-        return 0
+        return side**2
 
 
-class Pentagon:
-    def perimeter(self, side):
-        return round(5 * side, 2)
+class Pentagon(Figure2D):
+    sides = 5
 
     def area(self, side):
-        result = (1.0 / 4.0) * math.sqrt(5 * (5 + 2 * math.sqrt(5))) * side**2
-        return round(result, 2)
-
-    def volume(self, *args, **kwargs):
-        return 0
+        return (1.0 / 4.0) * math.sqrt(5 * (5 + 2 * math.sqrt(5))) * side**2
 
 
-class Hexagon:
-    def perimeter(self, side):
-        return round(6 * side, 2)
+class Hexagon(Figure2D):
+    sides = 6
 
     def area(self, side):
-        result = ((3 * math.sqrt(3)) / 2) * side**2
-        return round(result, 2)
-
-    def volume(self, *args, **kwargs):
-        return 0
+        return ((3 * math.sqrt(3)) / 2) * side**2
 
 
 class Cube:
     def perimeter(self, side):
-        return round(12 * side, 2)
+        return 12 * side
 
     def area(self, side):
-        return round(side**2 * 6, 2)
+        return side**2 * 6
 
     def volume(self, side):
-        return round(side**3, 2)
+        return side**3
 
 
 if __name__ == '__main__':
