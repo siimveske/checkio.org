@@ -1,29 +1,92 @@
+import math
+
+
 class Parameters:
-    pass
+    def __init__(self, param):
+        self.param = param
+        self.figure = None
+
+    def choose_figure(self, figure):
+        figure.param = self.param
+        self.figure = figure
+
+    def perimeter(self):
+        return self.figure.perimeter(self.param)
+
+    def area(self):
+        return self.figure.area(self.param)
+
+    def volume(self):
+        return self.figure.volume(self.param)
 
 
 class Circle:
-    pass
+    def perimeter(self, radius):
+        return round(2 * math.pi * radius, 2)
+
+    def area(self, radius):
+        return round(math.pi * radius**2, 2)
+
+    def volume(self, *args, **kwargs):
+        return 0
 
 
 class Triangle:
-    pass
+    def perimeter(self, side):
+        return round(3 * side, 2)
+
+    def area(self, side):
+        result = (math.sqrt(3.0) / 4.0) * side**2
+        return round(result, 2)
+
+    def volume(self, *args, **kwargs):
+        return 0
 
 
 class Square:
-    pass
+    def perimeter(self, side):
+        return round(4 * side, 2)
+
+    def area(self, side):
+        return round(side**2, 2)
+
+    def volume(self, *args, **kwargs):
+        return 0
 
 
 class Pentagon:
-    pass
+    def perimeter(self, side):
+        return round(5 * side, 2)
+
+    def area(self, side):
+        result = (1.0 / 4.0) * math.sqrt(5 * (5 + 2 * math.sqrt(5))) * side**2
+        return round(result, 2)
+
+    def volume(self, *args, **kwargs):
+        return 0
 
 
 class Hexagon:
-    pass
+    def perimeter(self, side):
+        return round(6 * side, 2)
+
+    def area(self, side):
+        result = ((3 * math.sqrt(3)) / 2) * side**2
+        return round(result, 2)
+
+    def volume(self, *args, **kwargs):
+        return 0
 
 
 class Cube:
-    pass
+    def perimeter(self, side):
+        return round(12 * side, 2)
+
+    def area(self, side):
+        return round(side**2 * 6, 2)
+
+    def volume(self, side):
+        return round(side**3, 2)
 
 
 if __name__ == '__main__':
