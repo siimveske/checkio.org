@@ -1,3 +1,6 @@
+'''https://py.checkio.org/en/mission/brackets/'''
+
+
 def checkio(expression):
     stack = [""]  # Use empty string as sentinel for pop() IndexError
     brackets = {"(": ")", "[": "]", "{": "}"}
