@@ -1,13 +1,10 @@
 class Friend:
     def __init__(self, name):
         self.name = name
-        self.invite = ""
+        self.invitation = "No party..."
 
     def show_invite(self) -> str:
-        if self.invite:
-            return self.invite
-        else:
-            return "No party..."
+        return self.invitation
 
 
 class Party:
@@ -25,9 +22,9 @@ class Party:
         except KeyError:
             pass
 
-    def send_invites(self, invite: str):
+    def send_invites(self, invitation: str):
         for friend in self.observers:
-            friend.invite = f"{self.place}: {invite}"
+            friend.invitation = f"{self.place}: {invitation}"
 
 
 if __name__ == '__main__':
