@@ -1,5 +1,12 @@
-def checkio(in_string):
-    return in_string
+import unicodedata
+
+
+def checkio(in_string: str):
+    result = []
+    for c in unicodedata.normalize('NFD', in_string):
+        if unicodedata.category(c) != 'Mn':
+            result.append(c)
+    return ''.join(result)
 
 
 if __name__ == '__main__':
