@@ -1,21 +1,12 @@
 def checkio(expression):
-    mapping = {
-        "}": "{",
-        "]": "[",
-        ")": "("
-    }
-    stack = []
-    for character in expression:
-        if character in mapping.values():
-            stack.append(character)
-        elif character in mapping:
-            if not stack:
-                return False
-            bracket = stack.pop()
-            if bracket != mapping[character]:
-                return False
-
-    return len(stack) == 0
+    stack = [""]  # Use empty string as sentinel for pop() IndexError
+    brackets = {"(": ")", "[": "]", "{": "}"}
+    for c in expression:
+        if c in brackets:
+            stack.append(brackets[c])
+        elif c in brackets.values() and c != stack.pop():
+            return False
+    return stack == [""]
 
 
 if __name__ == '__main__':
