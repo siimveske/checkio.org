@@ -5,23 +5,23 @@ class VoiceCommand:
 
     def first_channel(self):
         self.active_channel = 0
-        return self.channels[self.active_channel]
+        return self.current_channel()
 
     def last_channel(self):
         self.active_channel = len(self.channels) - 1
-        return self.channels[self.active_channel]
+        return self.current_channel()
 
     def turn_channel(self, n):
         self.active_channel = n - 1
-        return self.channels[self.active_channel]
+        return self.current_channel()
 
     def next_channel(self):
         self.active_channel = (self.active_channel + 1) % len(self.channels)
-        return self.channels[self.active_channel]
+        return self.current_channel()
 
     def previous_channel(self):
         self.active_channel = (self.active_channel - 1) % len(self.channels)
-        return self.channels[self.active_channel]
+        return self.current_channel()
 
     def current_channel(self):
         return self.channels[self.active_channel]
