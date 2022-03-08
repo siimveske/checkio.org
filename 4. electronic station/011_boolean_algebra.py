@@ -2,18 +2,17 @@
 https://py.checkio.org/en/mission/boolean-algebra/
 '''
 
+OPERATION_NAMES = {
+    "conjunction": lambda x, y: int(x and y),
+    "disjunction": lambda x, y: int(x or y),
+    "implication": lambda x, y: int(y or not x),
+    "exclusive": lambda x, y: int((x or y) and not (x and y)),
+    "equivalence": lambda x, y: int(x == y)
+}
+
 
 def boolean(x, y, operation):
-    if operation == "conjunction":
-        return int(x and y)
-    if operation == "disjunction":
-        return int(x or y)
-    if operation == "implication":
-        return int(not x or y)
-    if operation == "exclusive":
-        return int((x or y) and not (x and y))
-    if operation == "equivalence":
-        return int(x == y)
+    return OPERATION_NAMES.get(operation)(x, y)
 
 
 if __name__ == '__main__':
