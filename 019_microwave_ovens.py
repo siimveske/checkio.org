@@ -1,9 +1,9 @@
 class MicrowaveBase:
-    MAX_TIME = 90 * 60
-    MIN_TIME = 0
 
     def __init__(self):
         self.time = 0
+        self.MIN_TIME = 0
+        self.MAX_TIME = 90 * 60
 
     def set_time(self, time: str):
         minutes, seconds = time.split(":")
@@ -25,22 +25,45 @@ class MicrowaveBase:
             time = int(time[:-1]) * 60
         return time
 
+    def show_time(self) -> str:
+        minutes = self.time // 60
+        seconds = self.time % 60
+        return f"{minutes:02}:{seconds:02}"
+
 
 class Microwave1(MicrowaveBase):
-    pass
+    def show_time(self) -> str:
+        t = super().show_time()
+        t = '_' + t[1:]
+        return t
 
 
 class Microwave2(MicrowaveBase):
-    pass
+    def show_time(self) -> str:
+        t = super().show_time()
+        t = t[:-1] + '_'
+        return t
 
 
 class Microwave3(MicrowaveBase):
-    pass
+    ...
 
 
 class RemoteControl:
     def __init__(self, microwave: MicrowaveBase):
         self.microwave = microwave
+
+    def set_time(self, time: str):
+        self.microwave.set_time(time)
+
+    def add_time(self, time: str):
+        self.microwave.add_time(time)
+
+    def del_time(self, time: str):
+        self.microwave.del_time(time)
+
+    def show_time(self) -> str:
+        return self.microwave.show_time()
 
 
 if __name__ == '__main__':
