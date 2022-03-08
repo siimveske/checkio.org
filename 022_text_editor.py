@@ -1,27 +1,19 @@
-import copy
-
-
 class Text:
     def __init__(self):
-        self.text = []
+        self.text = ""
         self.font = ""
 
     def write(self, text: str):
-        self.text.append(text)
+        self.text += text
 
     def set_font(self, font: str):
-        self.font = font
+        self.font = f'[{font}]'
 
     def show(self):
-        if self.font:
-            return f"[{self.font}]{''.join(self.text)}[{self.font}]"
-        else:
-            return ''.join(self.text)
+        return f"{self.font}{self.text}{self.font}"
 
     def restore(self, commit: tuple):
-        font, text = commit
-        self.font = font
-        self.text = text
+        self.font, self.text = commit
 
 
 class SavedText:
@@ -30,12 +22,12 @@ class SavedText:
         self.version = 0
 
     def save_text(self, text: Text):
-        self.repo[self.version] = (text.font, copy.deepcopy(text.text))
+        self.repo[self.version] = (text.font, ''.join(text.text))
         self.version += 1
 
     def get_version(self, number: int):
         font, text = self.repo.get(number)
-        return (font, copy.deepcopy(text))
+        return (font, ''.join(text))
 
 
 if __name__ == '__main__':
