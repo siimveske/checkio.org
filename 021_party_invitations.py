@@ -1,9 +1,33 @@
 class Friend:
-    pass
+    def __init__(self, name):
+        self.name = name
+        self.invite = ""
+
+    def show_invite(self) -> str:
+        if self.invite:
+            return self.invite
+        else:
+            return "No party..."
 
 
 class Party:
-    pass
+
+    def __init__(self, place):
+        self.place = place
+        self.observers = set()
+
+    def add_friend(self, friend: Friend):
+        self.observers.add(friend)
+
+    def del_friend(self, friend: Friend):
+        try:
+            self.observers.remove(friend)
+        except KeyError:
+            pass
+
+    def send_invites(self, invite: str):
+        for friend in self.observers:
+            friend.invite = f"{self.place}: {invite}"
 
 
 if __name__ == '__main__':
