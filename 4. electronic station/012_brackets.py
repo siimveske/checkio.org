@@ -1,5 +1,21 @@
 def checkio(expression):
-    return True or False
+    mapping = {
+        "}": "{",
+        "]": "[",
+        ")": "("
+    }
+    stack = []
+    for character in expression:
+        if character in mapping.values():
+            stack.append(character)
+        elif character in mapping:
+            if not stack:
+                return False
+            bracket = stack.pop()
+            if bracket != mapping[character]:
+                return False
+
+    return len(stack) == 0
 
 
 if __name__ == '__main__':
