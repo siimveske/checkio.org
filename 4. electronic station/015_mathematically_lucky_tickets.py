@@ -1,17 +1,28 @@
-from itertools import product
+'''
+https://py.checkio.org/en/mission/mathematically-lucky-tickets/
+'''
 
 
-def possible_results(data):
+def divide(data):
     yield int(data)
-    for i in range(1, len(data)):
-        for (x, y) in product(possible_results(data[:i]), possible_results(data[i:])):
-            yield from (x + y, x - y, x * y)
-            if y:
-                yield x / y
+
+    # divide 123456: 1 23456, 12 3456, 123 456, ...
+    for pos in range(1, len(data)):
+        for left in divide(data[:pos]):
+            for right in divide(data[pos:]):
+                # calculate + - * /
+                yield left + right
+                yield left - right
+                yield left * right
+                if right:
+                    yield left / right
 
 
 def checkio(data):
-    return True if 100 not in possible_results(data) else False
+    for x in divide(data):
+        if x == 100:
+            return False
+    return True
 
 
 if __name__ == '__main__':
