@@ -10,28 +10,28 @@ def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> b
     n = len(polygon)
     inside = False
 
-    p1x, p1y = polygon[0]
+    x1, y1 = polygon[0]
     for i in range(n + 1):
-        p2x, p2y = polygon[i % n]
+        x2, y2 = polygon[i % n]
 
         # Test if Point is on a vertical (y) line
-        if x == p1x == p2x:
-            if (min(p1y, p2y) <= y <= max(p1y, p2y)):
+        if x == x1 == x2:
+            if (min(y1, y2) <= y <= max(y1, y2)):
                 return True
 
         # Test if Point is on a horizontal (x) line
-        if y == p1y == p2y:
-            if (min(p1x, p2x) <= x <= max(p1x, p2x)):
+        if y == y1 == y2:
+            if (min(x1, x2) <= x <= max(x1, x2)):
                 return True
 
-        if y > min(p1y, p2y):
-            if y <= max(p1y, p2y):
-                if x <= max(p1x, p2x):
-                    if p1y != p2y:
-                        xints = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
-                    if p1x == p2x or x <= xints:
+        if y > min(y1, y2):
+            if y <= max(y1, y2):
+                if x <= max(x1, x2):
+                    if y1 != y2:
+                        xints = (y - y1) * (x2 - x1) / (y2 - y1) + x1
+                    if x1 == x2 or x <= xints:
                         inside = not inside
-        p1x, p1y = p2x, p2y
+        x1, y1 = x2, y2
 
     return inside
 
