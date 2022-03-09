@@ -1,15 +1,33 @@
 '''
 https://py.checkio.org/en/mission/inside-block/
+https://stackoverflow.com/questions/36399381/whats-the-fastest-way-of-checking-if-a-point-is-inside-a-polygon-in-python
 '''
 from typing import Tuple
-from shapely.geometry import Point
-from shapely.geometry import Polygon
+
+
+def touches(polygon, point):
+    return point in polygon
 
 
 def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> bool:
-    point = Point(point)
-    polygon = Polygon(polygon)
-    return polygon.contains(point) or polygon.touches(point)
+    x, y = point
+
+    n = len(polygon)
+    inside = False
+
+    p1x, p1y = polygon[0]
+    for i in range(n + 1):
+        p2x, p2y = polygon[i % n]
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xints = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xints:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+
+    return inside
 
 
 if __name__ == '__main__':
@@ -24,5 +42,8 @@ if __name__ == '__main__':
 
     # Extra/0
     assert is_inside([[3, 4], [4, 2], [2, 1], [1, 3]], [2, 2]) == True
+
+    # Extra/3
+    is_inside([[1, 1], [1, 3], [3, 3], [3, 1]], [1, 1]) == True
 
     print("OK")
