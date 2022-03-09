@@ -6,12 +6,7 @@ from typing import Tuple
 
 
 def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> bool:
-
-    if point in polygon:
-        return True
-
     x, y = point
-
     n = len(polygon)
     inside = False
 
@@ -20,12 +15,12 @@ def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> b
         p2x, p2y = polygon[i % n]
 
         # Test if Point is on a vertical (y) line
-        if x == p1x and x == p2x:
+        if x == p1x == p2x:
             if (min(p1y, p2y) <= y <= max(p1y, p2y)):
                 return True
 
         # Test if Point is on a horizontal (x) line
-        if y == p1y and y == p2y:
+        if y == p1y == p2y:
             if (min(p1x, p2x) <= x <= max(p1x, p2x)):
                 return True
 
