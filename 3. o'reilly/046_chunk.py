@@ -6,7 +6,10 @@ from typing import Iterable
 
 
 def chunking_by(items: list, size: int) -> Iterable:
-    pass
+    chunks = []
+    for i in range(0, len(items), size):
+        chunks.append(items[i:i + size])
+    return chunks
 
 
 if __name__ == '__main__':
