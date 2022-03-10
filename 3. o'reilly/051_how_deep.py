@@ -4,13 +4,9 @@ https://py.checkio.org/en/mission/how-deep/
 
 
 def how_deep(structure):
-    depth = 1
-    for i in structure:
-        if type(i) is tuple:
-            d = 1 + how_deep(i)
-            if d > depth:
-                depth = d
-    return depth
+    if type(structure) is tuple:
+        return 1 + max(map(how_deep, structure), default=0)
+    return 0
 
 
 if __name__ == '__main__':
