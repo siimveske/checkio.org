@@ -1,7 +1,7 @@
 def time_converter(time):
     h, m = [int(i) for i in time.split(':')]
     suffix = 'a.m.' if h < 12 else 'p.m.'
-    h = 12 if h in [0, 12] else h % 12
+    h = (h - 1) % 12 + 1
     return f"{h}:{m:02} {suffix}"
 
 
