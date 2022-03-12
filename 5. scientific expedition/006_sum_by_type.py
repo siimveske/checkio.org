@@ -2,10 +2,10 @@ from typing import Tuple
 
 
 def sum_by_types(items: list) -> Tuple[str, int]:
-    result = {type(''): '', type(0): 0}
+    result = {str: '', int: 0}
     for item in items:
         result[type(item)] += item
-    return tuple(result.values())
+    return result.get(str), result.get(int)
 
 
 if __name__ == "__main__":
