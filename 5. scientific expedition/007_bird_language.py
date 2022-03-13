@@ -6,18 +6,21 @@ VOWELS = "aeiouy"
 
 
 def translate(text: str) -> str:
-    words = text.split()
-    translations = []
-    for word in words:
-        idx = 0
-        translated_word = []
-        while idx < len(word):
-            letter = word[idx]
-            translated_word.append(letter)
-            idx += 3 if letter in VOWELS else 2
-        translations.append(''.join(translated_word))
 
-    return ' '.join(translations)
+    idx = 0
+    translation = []
+
+    while idx < len(text):
+        letter = text[idx]
+        translation.append(letter)
+        if letter == ' ':
+            idx += 1
+        elif letter in VOWELS:
+            idx += 3
+        else:
+            idx += 2
+
+    return ''.join(translation)
 
 
 if __name__ == "__main__":
