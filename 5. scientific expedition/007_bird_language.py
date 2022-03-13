@@ -2,9 +2,22 @@
 https://py.checkio.org/en/mission/bird-language/
 '''
 
+VOWELS = "aeiouy"
+
 
 def translate(text: str) -> str:
-    return None
+    words = text.split()
+    translations = []
+    for word in words:
+        idx = 0
+        translated_word = []
+        while idx < len(word):
+            letter = word[idx]
+            translated_word.append(letter)
+            idx += 3 if letter in VOWELS else 2
+        translations.append(''.join(translated_word))
+
+    return ' '.join(translations)
 
 
 if __name__ == "__main__":
