@@ -1,6 +1,8 @@
 '''
 https://py.checkio.org/en/mission/inside-block/
-https://stackoverflow.com/questions/36399381/whats-the-fastest-way-of-checking-if-a-point-is-inside-a-polygon-in-python
+https://www.youtube.com/watch?v=01E0RGb2Wzo
+https://isedgar.github.io/point-in-polygon.html#/s0
+https://gist.github.com/isedgar/1f5c5b4cf34a43d4db15f9b4fe58b04f
 '''
 from typing import Tuple
 
@@ -10,9 +12,9 @@ def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> b
     n = len(polygon)
     inside = False
 
-    x1, y1 = polygon[0]
-    for i in range(n + 1):
-        x2, y2 = polygon[i % n]
+    for i in range(n):
+        x1, y1 = polygon[i]
+        x2, y2 = polygon[(i + 1) % n]
 
         # Test if Point is on a vertical (y) line
         if x == x1 == x2:
@@ -24,14 +26,12 @@ def is_inside(polygon: Tuple[Tuple[int, int], ...], point: Tuple[int, int]) -> b
             if (min(x1, x2) <= x <= max(x1, x2)):
                 return True
 
-        if y > min(y1, y2):
-            if y <= max(y1, y2):
-                if x <= max(x1, x2):
-                    if y1 != y2:
-                        xints = (y - y1) * (x2 - x1) / (y2 - y1) + x1
-                    if x1 == x2 or x <= xints:
-                        inside = not inside
-        x1, y1 = x2, y2
+        if (y < y1) != (y < y2):  # y must be between y1 and y2
+            # x coordinate of the intersection point
+            # https://en.wikipedia.org/wiki/Linear_equation#Two-point_form
+            xints = (x2 - x1) * (y - y1) / (y2 - y1) + x1
+            if x <= xints:
+                inside = not inside
 
     return inside
 
