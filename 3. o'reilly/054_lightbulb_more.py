@@ -13,54 +13,51 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
               end_watching: Optional[datetime] = None,
               operating: Optional[timedelta] = None,
               req: Optional[int] = None) -> int:
-    """
-        how long the light bulb has been turned on
-    """
-    total_time_on = 0
 
     if start_watching is None:
-        start_watching = datetime(1970, 1, 1, 0, 0, 0)
+        start_watching = datetime.min
     if end_watching is None:
-        end_watching = datetime(9999, 12, 31, 23, 59, 59)
+        end_watching = datetime.max
+    if operating is None:
+        operating = datetime.max - datetime.min
     if req is None:
         req = 1
 
-    if operating:
-        button_presses = []
-        btn_press_map = defaultdict(list)
-        for item in els:
-            if type(item) == tuple:
-                btn_press_map[item[1]].append(item[0])
-            else:
-                btn_press_map[1].append(item)
+    # Sepparate button presses into different tracks using button id
+    timeline = defaultdict(list)
+    for item in els:
+        if type(item) == tuple:
+            timeline[item[1]].append(item[0])
+        else:
+            timeline[1].append(item)
 
-        for idx in btn_press_map:
-            presses = btn_press_map[idx]
-            if len(presses) % 2 != 0:
-                presses.append(end_watching)
+    operations = []
+    for idx in timeline:
+        btn_presses = timeline[idx]
+        # Make sure all lamps are turned off eventually
+        if len(btn_presses) % 2 != 0:
+            btn_presses.append(end_watching)
 
-            time_left = operating
-            for start, stop in zip(presses[::2], presses[1::2]):
-                if time_left.total_seconds() <= 0:
-                    break
-                delta = stop - start
+        # Include operating time into end time calculation
+        time_left = operating
+        for start, stop in zip(btn_presses[::2], btn_presses[1::2]):
+            delta = stop - start
+            begin = (start, idx)
+            end = (start + time_left, idx) if delta > time_left else (stop, idx)
 
-                button_presses.append((start, idx))
-                if delta > time_left:
-                    button_presses.append((start + time_left, idx))
-                else:
-                    button_presses.append((stop, idx))
-                time_left -= delta
-    else:
-        button_presses = [dt if type(dt) == tuple else (dt, 1) for dt in els]
+            operations.append(begin)
+            operations.append(end)
 
-    button_presses.sort()
+            time_left -= delta
+            if time_left.total_seconds() <= 0:
+                break
+    operations.sort()
 
-    if len(button_presses) % 2 != 0:
-        button_presses.append((end_watching, 0))
+    total_time_on = 0
+    last_timestamp = None
+    lights_on = set()
 
-    last_timestamp, lights_on = None, set()
-    for timestamp, light_id in button_presses:
+    for timestamp, light_id in operations:
         if len(lights_on) >= req:
             L = max(start_watching, last_timestamp)
             R = min(end_watching, timestamp)
