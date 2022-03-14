@@ -1,3 +1,6 @@
+'''
+https://py.checkio.org/en/mission/determine-the-order/
+'''
 from collections import defaultdict
 
 
@@ -49,3 +52,4 @@ if __name__ == "__main__":
     assert (checkio(["a", "b", "c"]) == "abc")  # "Cant determine the order - use english alphabet"
     assert checkio(["aazzss"]) == "azs"  # "Each symbol only once"
     assert checkio(["dfg", "frt", "tyg"]) == "dfrtyg"  # "Concatenate and paste in"
+    print("OK")
