@@ -5,7 +5,7 @@ https://py.checkio.org/en/mission/common-words/
 
 def checkio(line1: str, line2: str) -> str:
     A = set(line1.split(','))
-    B = set(line2.split(','))
+    B = line2.split(',')  # set.intersection() can accept any iterable not only set
     intersection = A.intersection(B)
     return ','.join(sorted(intersection))
 
