@@ -7,7 +7,7 @@ def checkio(line1: str, line2: str) -> str:
     A = set(line1.split(','))
     B = set(line2.split(','))
     intersection = A.intersection(B)
-    return ','.join(sorted(list(intersection)))
+    return ','.join(sorted(intersection))
 
 
 if __name__ == '__main__':
