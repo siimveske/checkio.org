@@ -18,136 +18,66 @@ def checkio(crossword, words):
     return result
 
 
+def scan(crossword, words, rules, coords):
+
+    solution = []
+    r, c = coords
+
+    for word_idx, word in enumerate(words):
+        new_rules = rules.copy()
+        problem = False
+        for char_idx, char in enumerate(word):
+            row = char_idx if r is None else r
+            col = char_idx if c is None else c
+            constraint = crossword[row][col]
+            if new_rules.setdefault(constraint, char) != char:
+                problem = True
+                break  # character already used
+            new_rules[constraint] = char
+
+        if problem:
+            continue
+
+        remainder = words[:word_idx] + words[word_idx + 1:]
+        if remainder == []:
+            solution = [word]
+            break
+
+        r = solve(crossword, remainder, new_rules)
+        if r:
+            solution = [word] + r
+            break
+
+    return solution
+
+
 def solve(crossword, words, rules):
 
     solution = []
 
-    if len(words) == 6:  # Solve First Row
-        for word_idx, word in enumerate(words):
-            new_rules = rules.copy()
-            problem = False
-            for char_idx, char in enumerate(word):
-                constraint = crossword[0][char_idx]  # scan top row from left to right
-                if constraint in new_rules and new_rules[constraint] != char:
-                    problem = True
-                    break  # we have already used a different character
-                new_rules[constraint] = char
-
-            if problem:
-                continue
-
-            remainder = words[:word_idx] + words[word_idx + 1:]
-            if remainder == []:
-                break
-
-            r = solve(crossword, remainder, new_rules)
-            if r:
-                solution = [word] + r
-                break
+    if len(words) == 6:  # Solve top row
+        coords = (0, None)  # Scan top row from left to right
+        solution = scan(crossword, words, rules, coords)
 
     elif len(words) == 5:  # Solve right column
-        for word_idx, word in enumerate(words):
-            new_rules = rules.copy()
-            problem = False
-            for char_idx, char in enumerate(word):
-                constraint = crossword[char_idx][4]  # scan right column from top to bottom
-                if constraint in new_rules and new_rules[constraint] != char:
-                    problem = True
-                    break  # we have already used a different character
-                new_rules[constraint] = char
-            if problem:
-                continue
+        coords = (None, 4)  # Scan right column from top to bottom
+        solution = scan(crossword, words, rules, coords)
 
-            remainder = words[:word_idx] + words[word_idx + 1:]
-            if remainder == []:
-                break
-
-            r = solve(crossword, remainder, new_rules)
-            if r:
-                solution = [word] + r
-                break
-
-    elif len(words) == 4:  # Solve last row
-        for word_idx, word in enumerate(words):
-            new_rules = rules.copy()
-            problem = False
-            for char_idx, char in enumerate(word):
-                constraint = crossword[4][char_idx]  # scan bottom row
-                if constraint in new_rules and new_rules[constraint] != char:
-                    problem = True
-                    break  # we have already used a different character
-                new_rules[constraint] = char
-
-            if problem:
-                continue
-
-            remainder = words[:word_idx] + words[word_idx + 1:]
-            if remainder == []:
-                break
-
-            r = solve(crossword, remainder, new_rules)
-            if r:
-                solution = [word] + r
-                break
+    elif len(words) == 4:  # Solve bottom row
+        coords = (4, None)  # # Scan bottom row from left to right
+        solution = scan(crossword, words, rules, coords)
 
     elif len(words) == 3:  # Solve left column
-        for word_idx, word in enumerate(words):
-            new_rules = rules.copy()
-            problem = False
-            for char_idx, char in enumerate(word):
-                constraint = crossword[char_idx][0]  # scan left column
-                if constraint in new_rules and new_rules[constraint] != char:
-                    problem = True
-                    break  # we have already used a different character
-                new_rules[constraint] = char
-
-            if problem:
-                continue
-
-            remainder = words[:word_idx] + words[word_idx + 1:]
-            if remainder == []:
-                break
-
-            r = solve(crossword, remainder, new_rules)
-            if r:
-                solution = [word] + r
-                break
+        coords = (None, 0)  # Scan left column top to bottom
+        solution = scan(crossword, words, rules, coords)
 
     elif len(words) == 2:  # Solve middle row
-        for word_idx, word in enumerate(words):
-            new_rules = rules.copy()
-            problem = False
-            for char_idx, char in enumerate(word):
-                constraint = crossword[2][char_idx]  # scan middle row from left to right
-                if constraint in new_rules and new_rules[constraint] != char:
-                    problem = True
-                    break  # we have already used a different character
-                new_rules[constraint] = char
+        coords = (2, None)  # Scan middle row from left to right
+        solution = scan(crossword, words, rules, coords)
 
-            if problem:
-                continue
-
-            remainder = words[:word_idx] + words[word_idx + 1:]
-            if remainder == []:
-                break
-
-            r = solve(crossword, remainder, new_rules)
-            if r:
-                solution = [word] + r
-                break
-    else:  # Solve middle column (last one to be solved)
-        word = words[0]
-        new_rules = rules.copy()
-        problem = False
-        for char_idx, char in enumerate(word):
-            constraint = crossword[char_idx][2]  # scan middle column from top to bottom
-            if constraint in new_rules and new_rules[constraint] != char:
-                problem = True
-                break  # we have already used a different character
-            new_rules[constraint] = char
-
-        if not problem:
-            solution = [word]
+    else:  # Solve middle column (last one)
+        coords = (None, 2)  # Scan middle column from top to bottomt
+        solution = scan(crossword, words, rules, coords)
 
     return solution
 
@@ -169,3 +99,5 @@ if __name__ == "__main__":
         ["i", " ", "m", " ", "n"],
         ["t", "r", "a", "c", "e"],
     ]
+
+    print('OK')
