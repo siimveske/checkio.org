@@ -4,60 +4,71 @@ WHITESPACE_STR = ' \t\n\r'
 
 def parse_array(s: str, _w=WHITESPACE_STR, _sep=","):
 
-    info = {}
-    s = s.strip()
-
-    for c in s:
-        info.setdefault(c, 0)
-        info[c] += 1
-
-    if '[' not in info or ']' not in info:
-        raise ValueError
-    if info['['] != info[']']:
-        raise ValueError
-    if ',,' in ''.join([i for i in s if i not in WHITESPACE_STR]):
-        raise ValueError
-    if not s.startswith('[') or not s.endswith(']'):
-        raise ValueError
-
-    result = None
+    array = None
     stack = []
-    acc = ''
-    last_char = ''
+    accumulator = ""
+    closed_flag = False
+    sep_flag = False
+    whitespace_flag = False
+    started_flag = False
 
-    for c in s:
-        if c.isdigit() and last_char == ']':
-            raise ValueError
-        if c == '[' and last_char.isdigit():
-            raise ValueError
-        if c == '[' and last_char == ']':
-            raise ValueError
-
-        if c == '[':
-            stack.append(list())
-            acc = ''
-        elif c == ']':
-            if acc:
-                stack[-1].append(int(acc))
-                acc = ''
-            tmp = stack.pop()
-            if not stack:
-                if result:
-                    raise ValueError
-                result = tmp
-            else:
-                stack[-1].append(tmp)
-        elif c == ',':
-            if acc:
-                stack[-1].append(int(acc))
-                acc = ''
-        else:
-            if c.isalpha():
+    for ch in s:
+        if ch in _w:
+            whitespace_flag = True
+            continue
+        if ch == "[":
+            if started_flag and not stack:
+                raise ValueError("Wrong string.")
+            if closed_flag or accumulator:
                 raise ValueError
-            acc += c
-        last_char = c
+            in_array = []
+            if stack:
+                stack[-1](in_array)
+            else:
+                array = in_array
+                started_flag = True
+            stack.append(in_array.append)
+        elif not started_flag:
+            raise ValueError("Wrong string.")
+        elif ch == "]":
 
-    return result
+            if not stack:
+                raise ValueError("Wrong string.")
+            if accumulator:
+                stack[-1](int(accumulator))
+                accumulator = ""
+            stack.pop()
+            closed_flag = True
+            sep_flag = False
+            whitespace_flag = False
+        elif ch in _sep:
+            if accumulator:
+                stack[-1](int(accumulator))
+                accumulator = ""
+            elif closed_flag:
+                pass
+            else:
+                raise ValueError("Wrong string.")
+            sep_flag = True
+            closed_flag = False
+            whitespace_flag = False
+        else:
+            if whitespace_flag and accumulator or closed_flag:
+                raise ValueError
+            accumulator += ch
+        whitespace_flag = False
+
+    if stack:
+        raise ValueError("Wrong string")
+    if closed_flag is False:
+        raise ValueError("Wrong string")
+    if sep_flag is True:
+        raise ValueError("Wrong string")
+
+    if array:
+        return array
+    else:
+        raise ValueError("Wrong string")
 
 
 if __name__ == "__main__":
