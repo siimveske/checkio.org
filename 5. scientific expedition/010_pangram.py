@@ -5,8 +5,7 @@ def check_pangram(text):
     '''
         is the given text is a pangram.
     '''
-    ascii_letters = [i.lower() for i in text if i in string.ascii_letters]
-    return len(set(ascii_letters)) == len(set(string.ascii_lowercase))
+    return set(string.ascii_lowercase) <= (set(text.lower()))
 
 
 if __name__ == '__main__':
