@@ -4,19 +4,17 @@ from typing import Tuple
 def follow(instructions: str) -> Tuple[int, int]:
 
     mapper = {
-        'f': (0, 1),
-        'b': (0, -1),
-        'r': (1, 0),
-        'l': (-1, 0),
+        'f': lambda x, y: (x, y + 1),
+        'b': lambda x, y: (x, y - 1),
+        'l': lambda x, y: (x - 1, y),
+        'r': lambda x, y: (x + 1, y)
     }
 
-    x, y = (0, 0)
-    for i in instructions:
-        dx, dy = mapper[i]
-        x += dx
-        y += dy
+    result = (0, 0)
+    for step in instructions:
+        result = mapper[step](*result)
 
-    return (x, y)
+    return result
 
 
 if __name__ == '__main__':
