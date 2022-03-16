@@ -1,85 +1,34 @@
 '''
 https://py.checkio.org/en/mission/cipher-crossword/
 '''
-from collections import defaultdict
 
 
-def checkio(crossword, words):
+def checkio(crossword: list, words: list):
+    board = crossword[::2] + [i for i in zip(*crossword)][::2]
+    solution = {0: ' '}
 
-    rules = defaultdict(str)
-    r = solve(crossword, words, rules)
-    result = [
-        [i for i in r[0]],
-        [r[3][1], ' ', r[5][1], ' ', r[1][1]],
-        [i for i in r[4]],
-        [r[3][3], ' ', r[5][3], ' ', r[1][3]],
-        [i for i in r[2]]
-    ]
-    return result
+    def solve(words: list, memo: dict):
+        if words:
+            codes = board[len(words) - 1]
+            for word in words:
+                new_memo = memo.copy()
+                flag = True
+                for letter, current_code in zip(word, codes):
+                    solution[current_code] = letter
+                    previous_code = memo.get(letter)
+                    if previous_code:
+                        if (flag := previous_code == current_code) is False:
+                            break
+                    else:
+                        new_memo[letter] = current_code
+                if flag and solve([w for w in words if w != word], new_memo):
+                    return True
+            return False
+        else:
+            return True
 
-
-def scan(crossword, words, rules, coords):
-
-    solution = []
-    r, c = coords
-
-    for word_idx, word in enumerate(words):
-        new_rules = rules.copy()
-        problem = False
-        for char_idx, char in enumerate(word):
-            row = char_idx if r is None else r
-            col = char_idx if c is None else c
-            constraint = crossword[row][col]
-            if new_rules.setdefault(constraint, char) != char:
-                problem = True
-                break  # character already used
-            new_rules[constraint] = char
-
-        if problem:
-            continue
-
-        remainder = words[:word_idx] + words[word_idx + 1:]
-        if remainder == []:
-            solution = [word]
-            break
-
-        r = solve(crossword, remainder, new_rules)
-        if r:
-            solution = [word] + r
-            break
-
-    return solution
-
-
-def solve(crossword, words, rules):
-
-    solution = []
-
-    if len(words) == 6:  # Solve top row
-        coords = (0, None)  # Scan top row from left to right
-        solution = scan(crossword, words, rules, coords)
-
-    elif len(words) == 5:  # Solve right column
-        coords = (None, 4)  # Scan right column from top to bottom
-        solution = scan(crossword, words, rules, coords)
-
-    elif len(words) == 4:  # Solve bottom row
-        coords = (4, None)  # # Scan bottom row from left to right
-        solution = scan(crossword, words, rules, coords)
-
-    elif len(words) == 3:  # Solve left column
-        coords = (None, 0)  # Scan left column top to bottom
-        solution = scan(crossword, words, rules, coords)
-
-    elif len(words) == 2:  # Solve middle row
-        coords = (2, None)  # Scan middle row from left to right
-        solution = scan(crossword, words, rules, coords)
-
-    else:  # Solve middle column (last one)
-        coords = (None, 2)  # Scan middle column from top to bottomt
-        solution = scan(crossword, words, rules, coords)
-
-    return solution
+    solve(words, {})
+    return [[solution[num] for num in row] for row in crossword]
 
 
 if __name__ == "__main__":
