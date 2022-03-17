@@ -5,12 +5,11 @@ from collections import deque
 def letter_queue(commands: List[str]) -> str:
     queue = deque()
     for cmd in commands:
-        if 'PUSH' in cmd:
-            _, val = cmd.split()
-            queue.append(val)
-        else:
+        if cmd == 'POP':
             if queue:
                 queue.popleft()
+        else:
+            queue.append(cmd[-1])
     return ''.join(queue)
 
 
