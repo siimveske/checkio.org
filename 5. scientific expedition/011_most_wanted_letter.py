@@ -2,20 +2,17 @@
 https://py.checkio.org/en/mission/most-wanted-letter/
 '''
 
-from collections import defaultdict
+import string
 
 
 def checkio(text: str) -> str:
-
-    stats = defaultdict(int)
+    '''
+    Iterate through latyn alphabet and count each letter in the text.
+    'max()' selects the most frequent letter. If multiple items are maximal,
+    the max() returns the first one encountered
+    '''
     text = text.lower()
-
-    for char in text:
-        if char.isalpha():
-            stats[char] += 1
-
-    results = sorted(stats.items(), key=lambda x: (-x[1], x[0]))
-    return results[0][0]
+    return max(string.ascii_lowercase, key=text.count)
 
 
 if __name__ == '__main__':
