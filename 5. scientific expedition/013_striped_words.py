@@ -2,57 +2,38 @@
 https://py.checkio.org/en/mission/striped-words/
 '''
 
-import string
 
 VOWELS = set("AEIOUY")
-SEPARATORS = set(' ') | set(string.punctuation)
+CONSONANTS = set("BCDFGHJKLMNPQRSTVWXZ")
 
 
-def checkio(line: str) -> str:
-    line = line.upper()
+def striped(word: str) -> bool:
 
-    words = []
-    accumulator = []
-    is_word = True
+    for forbidden in ["cc", "vv", "d"]:
+        if forbidden in word:
+            return False
+    return len(word) > 1
 
-    # Parse words
-    for char in line:
-        char = char.upper()
-        if char in SEPARATORS:
-            if accumulator and is_word:
-                words.append(''.join(accumulator))
-            accumulator.clear()
-            is_word = True
+
+def encode(text: str):
+    encoded = []
+    for char in text:
+        if char in VOWELS:
+            encoded.append('v')
+        elif char in CONSONANTS:
+            encoded.append('c')
+        elif char.isdigit():
+            encoded.append('d')
         else:
-            if char.isdigit():
-                is_word = False
-            else:
-                accumulator.append(char)
-    if accumulator and is_word:
-        words.append(''.join(accumulator))
+            encoded.append('p')  # punctuation (and space)
+    return ''.join(encoded)
 
-    # Count striped words
-    cnt = 0
-    for word in words:
-        if len(word) == 1:
-            continue
 
-        striped = True
-        for idx in range(len(word) - 1):
-            a, b = word[idx], word[idx + 1]
-            if a.isdigit() or b.isdigit():
-                striped = False
-                break
-            if (a in VOWELS) != (b in VOWELS):
-                continue
-            else:
-                striped = False
-                break
-
-        if striped:
-            cnt += 1
-
-    return cnt
+def checkio(text):
+    text = text.upper()
+    encoded = encode(text)
+    words = encoded.split('p')
+    return sum(map(striped, words))
 
 
 if __name__ == '__main__':
