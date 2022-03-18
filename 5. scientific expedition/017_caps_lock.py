@@ -9,8 +9,7 @@ def caps_lock(text: str) -> str:
     for i in text:
         if i == 'a':
             caps_lock_on = not caps_lock_on
-            continue
-        if caps_lock_on:
+        elif caps_lock_on:
             buffer.append(i.upper())
         else:
             buffer.append(i)
