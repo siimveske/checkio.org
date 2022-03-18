@@ -1,5 +1,5 @@
 def to_camel_case(name: str) -> str:
-    return ''.join([i.capitalize() for i in name.split('_')])
+    return name.title().replace('_', '')
 
 
 if __name__ == '__main__':
