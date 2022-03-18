@@ -1,6 +1,10 @@
 def from_camel_case(name: str) -> str:
-    # replace this for solution
-    return name
+    result = []
+    for i, char in enumerate(name):
+        if char.isupper() and i > 0:
+            result.append('_')
+        result.append(char.lower())
+    return ''.join(result)
 
 
 if __name__ == '__main__':
