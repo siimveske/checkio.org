@@ -14,15 +14,8 @@ def checkio(time_string: str) -> str:
     s2 = f'{int(hhmmss[2][1]):04b}'
 
     # build output string
-    encoded = []
-    mapping = {'0': '.', '1': '-'}
-    for bin_number in [h1, h2, m1, m2, s1, s2]:
-        buffer = []
-        for digit in bin_number:
-            buffer.append(mapping[digit])
-        encoded.append(''.join(buffer))
-
-    return '{0} {1} : {2} {3} : {4} {5}'.format(*encoded)
+    TO_MORSE = str.maketrans('01', '.-')
+    return f'{h1} {h2} : {m1} {m2} : {s1} {s2}'.translate(TO_MORSE)
 
 
 if __name__ == '__main__':
