@@ -1,7 +1,6 @@
 '''
 https://py.checkio.org/en/mission/yaml-more-types/
 '''
-import re
 
 
 def yaml(a: str) -> dict:
@@ -16,10 +15,9 @@ def yaml(a: str) -> dict:
             elif value in mapping:
                 value = mapping[value]
             else:
-                value = re.sub(r"\\.", "XXX", value)
-                value = value.replace('"', '')
-                value = value.replace('\'', '')
-                value = value.replace('XXX', '"')
+                value = value.replace('\\', '')
+                if value[0] in '"\'':
+                    value = value[1:-1]
             result[key] = value
     return result
 
