@@ -7,18 +7,23 @@ def yaml(a: str) -> dict:
     result = {}
     mapping = {'': None, 'null': None, 'true': True, 'false': False}
     for line in a.splitlines():
-        if line:
-            key, value = line.split(':')
-            value = value.strip()
-            if value.isnumeric():
-                value = int(value)
-            elif value in mapping:
-                value = mapping[value]
-            else:
-                value = value.replace('\\', '')
-                if value[0] in '"\'':
-                    value = value[1:-1]
-            result[key] = value
+        if not line:
+            continue
+
+        key, value = line.split(':')
+        value = value.strip()
+
+        if value.isnumeric():
+            value = int(value)
+        elif value in mapping:
+            value = mapping[value]
+        else:
+            value = value.replace('\\', '')
+            if value[0] in {'"', "'"}:
+                value = value[1:-1]
+
+        result[key] = value
+
     return result
 
 
