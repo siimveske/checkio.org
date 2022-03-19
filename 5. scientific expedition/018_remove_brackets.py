@@ -24,14 +24,14 @@ def _remove_brackets(line: str, memo: dict) -> str:
     if is_balanced(line):
         return line
 
-    result = ""
+    longest_balanced_line = ""
     for idx in range(len(line)):
         slice = line[:idx] + line[idx + 1:]
-        tmp = _remove_brackets(slice, memo)
-        if len(tmp) > len(result):
-            result = tmp
+        balanced_line = _remove_brackets(slice, memo)
+        if len(balanced_line) > len(longest_balanced_line):
+            longest_balanced_line = balanced_line
 
-    memo[line] = result
+    memo[line] = longest_balanced_line
     return memo[line]
 
 
