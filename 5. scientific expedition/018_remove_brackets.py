@@ -4,6 +4,9 @@ https://py.checkio.org/en/mission/remove-brackets/
 
 
 def is_balanced(data):
+    '''Solution by checkio user: veky
+    https://py.checkio.org/mission/brackets/publications/veky/python-3/stack/'''
+
     stack = [""]
     brackets = {"(": ")", "[": "]", "{": "}"}
     for c in data:
