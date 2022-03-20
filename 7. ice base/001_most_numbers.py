@@ -4,7 +4,19 @@ https://py.checkio.org/en/mission/most-numbers/
 
 
 def checkio(*args):
-    return 0
+    if not args:
+        return 0
+
+    minimum = float('inf')
+    maximum = float('-inf')
+
+    for i in args:
+        if i < minimum:
+            minimum = i
+        if i > maximum:
+            maximum = i
+
+    return maximum - minimum
 
 
 if __name__ == '__main__':
