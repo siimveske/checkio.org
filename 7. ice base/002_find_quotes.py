@@ -9,10 +9,16 @@ def find_quotes(a: str) -> list:
     for chr in a:
         if chr == '"':
             if flag and word:
-                quotes.append(''.join(word))
+                word.append(chr)
+                tmp = ''.join(word)
+                if tmp == '""':
+                    quotes.append('')
+                else:
+                    quotes.append(tmp[1:-1])
                 word.clear()
             flag = not flag
-        elif flag:
+
+        if flag:
             word.append(chr)
 
     return quotes
