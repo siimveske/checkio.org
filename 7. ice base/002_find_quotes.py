@@ -1,8 +1,21 @@
 '''https://py.checkio.org/en/mission/find-quotes/'''
 
 
-def find_quotes(a):
-    return None
+def find_quotes(a: str) -> list:
+    word = []
+    quotes = []
+    flag = False
+
+    for chr in a:
+        if chr == '"':
+            if flag and word:
+                quotes.append(''.join(word))
+                word.clear()
+            flag = not flag
+        elif flag:
+            word.append(chr)
+
+    return quotes
 
 
 if __name__ == '__main__':
