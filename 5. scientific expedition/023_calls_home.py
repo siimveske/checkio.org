@@ -1,3 +1,6 @@
+'''
+https://py.checkio.org/en/mission/calls-home/
+'''
 import math
 from collections import defaultdict
 from typing import List
@@ -6,15 +9,12 @@ from typing import List
 def total_cost(calls: List[str]) -> int:
     mapping = defaultdict(int)
     for call in calls:
-        date, time, duration = call.split(' ')
+        date, _, duration = call.split(' ')
         mapping[date] += math.ceil(int(duration) / 60)
 
     total = 0
     for duration in mapping.values():
-        expensive = max(0, duration - 100)
-        cheap = duration - expensive
-        cost = cheap + 2 * expensive
-        total += cost
+        total += max(duration, duration * 2 - 100)
 
     return total
 
