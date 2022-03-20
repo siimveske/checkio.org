@@ -7,8 +7,7 @@ def checkio(*args):
     if not args:
         return 0
 
-    minimum = float('inf')
-    maximum = float('-inf')
+    minimum = maximum = args[0]
 
     for i in args:
         if i < minimum:
