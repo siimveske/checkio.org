@@ -1,25 +1,23 @@
 '''https://py.checkio.org/en/mission/find-quotes/'''
 
 
-def find_quotes(a: str) -> list:
-    word = []
+def find_quotes(s: str) -> list:
     quotes = []
-    flag = False
+    str_length = len(s)
+    start = 0
+    end = 1
 
-    for chr in a:
-        if chr == '"':
-            if flag and word:
-                word.append(chr)
-                tmp = ''.join(word)
-                if tmp == '""':
-                    quotes.append('')
-                else:
-                    quotes.append(tmp[1:-1])
-                word.clear()
-            flag = not flag
-
-        if flag:
-            word.append(chr)
+    while start < str_length:
+        if s[start] == '"':
+            while s[end] != '"':
+                end += 1
+            quote = s[start + 1:end]
+            quotes.append(quote)
+            start = end + 1
+            end = start + 1
+        else:
+            start += 1
+            end += 1
 
     return quotes
 
