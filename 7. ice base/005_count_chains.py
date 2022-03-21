@@ -4,44 +4,45 @@ import math
 from typing import List, Tuple
 
 
-def distance(a: Tuple[int, int], b: Tuple[int, int]):
+def distance(a: Tuple[int, int], b: Tuple[int, int]) -> float:
     x1, y1 = a
     x2, y2 = b
-    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return math.hypot(x2 - x1, y2 - y1)
 
 
-def intersect(a: Tuple[int, int, int], b: Tuple[int, int, int]):
+def intersect(a: Tuple[int, int, int], b: Tuple[int, int, int]) -> bool:
     x1, y1, r1 = a
     x2, y2, r2 = b
     dist = distance((x1, y1), (x2, y2))
     return abs(r2 - r1) < dist < (r1 + r2)
 
 
-def count_chains(circles: List[Tuple[int, int, int]]) -> int:
-    circles = [tuple(c) for c in circles]
-    connected = {c: [] for c in circles}
+def mark_visited(graph: dict, start: Tuple[int, int, int], visited: dict):
+    visited.add(start)
+    for node in graph[start]:
+        if node not in visited:
+            mark_visited(graph, node, visited)
+
+
+def build_graph(circles: list) -> dict:
+    graph = {c: [] for c in circles}
     for i in range(len(circles) - 1):
         for j in range(i + 1, len(circles)):
-            a = circles[i]
-            b = circles[j]
+            a, b = circles[i], circles[j]
             if intersect(a, b):
-                connected[a].append(b)
-                connected[b].append(a)
+                graph[a].append(b)
+                graph[b].append(a)
+    return graph
 
-    visited = set()
-    cnt = 0
-    for key in connected:
-        if key in visited:
-            continue
-        stack = [key]
-        while stack:
-            item = stack.pop()
-            if item in visited:
-                continue
-            visited.add(item)
-            for i in connected[item]:
-                stack.append(i)
-        cnt += 1
+
+def count_chains(circles: List[Tuple[int, int, int]]) -> int:
+    graph = build_graph(circles)
+
+    cnt, visited = 0, set()
+    for circle in graph:
+        if circle not in visited:
+            mark_visited(graph, circle, visited)
+            cnt += 1
     return cnt
 
 
@@ -54,5 +55,6 @@ if __name__ == '__main__':
     assert count_chains([(0, 0, 1), (-1, 1, 1), (1, -1, 1), (-2, -2, 1)]) == 2, 'negative coordinates'
 
     # Basics/6
-    assert count_chains([[1, 3, 1], [2, 2, 1], [4, 2, 1], [5, 3, 1], [3, 3, 1]]) == 1
+    assert count_chains([(1, 3, 1), (2, 2, 1), (4, 2, 1), (5, 3, 1), (3, 3, 1)]) == 1
+
     print("OK")
