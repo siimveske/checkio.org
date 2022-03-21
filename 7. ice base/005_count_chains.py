@@ -1,6 +1,5 @@
 '''https://py.checkio.org/en/mission/count-chains/'''
 
-import itertools
 import math
 from typing import List, Tuple
 
@@ -19,6 +18,7 @@ def intersect(a: Tuple[int, int, int], b: Tuple[int, int, int]):
 
 
 def count_chains(circles: List[Tuple[int, int, int]]) -> int:
+    circles = [tuple(c) for c in circles]
     connected = {c: [] for c in circles}
     for i in range(len(circles) - 1):
         for j in range(i + 1, len(circles)):
@@ -26,10 +26,23 @@ def count_chains(circles: List[Tuple[int, int, int]]) -> int:
             b = circles[j]
             if intersect(a, b):
                 connected[a].append(b)
+                connected[b].append(a)
 
-    vals = set(itertools.chain(*connected.values()))
-    keys = set(connected.keys())
-    return len(keys - vals)
+    visited = set()
+    cnt = 0
+    for key in connected:
+        if key in visited:
+            continue
+        stack = [key]
+        while stack:
+            item = stack.pop()
+            if item in visited:
+                continue
+            visited.add(item)
+            for i in connected[item]:
+                stack.append(i)
+        cnt += 1
+    return cnt
 
 
 if __name__ == '__main__':
@@ -39,4 +52,7 @@ if __name__ == '__main__':
     assert count_chains([(2, 2, 1), (2, 2, 2)]) == 2, 'inclusion'
     assert count_chains([(1, 1, 1), (1, 3, 1), (3, 1, 1), (3, 3, 1)]) == 4, 'adjacent'
     assert count_chains([(0, 0, 1), (-1, 1, 1), (1, -1, 1), (-2, -2, 1)]) == 2, 'negative coordinates'
+
+    # Basics/6
+    assert count_chains([[1, 3, 1], [2, 2, 1], [4, 2, 1], [5, 3, 1], [3, 3, 1]]) == 1
     print("OK")
