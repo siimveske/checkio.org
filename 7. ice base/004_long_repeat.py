@@ -1,25 +1,13 @@
 '''https://py.checkio.org/en/mission/long-repeat/'''
 
+from itertools import groupby
+
 
 def long_repeat(line: str) -> int:
     """
         length the longest substring that consists of the same char
     """
-    if not line:
-        return 0
-
-    cnt = 1
-    longest = 0
-
-    for i in range(len(line) - 1):
-        if line[i] == line[i + 1]:
-            cnt += 1
-        else:
-            longest = max(cnt, longest)
-            cnt = 1
-    longest = max(cnt, longest)
-
-    return longest
+    return max([len(list(g)) for _, g in groupby(line)], default=0)
 
 
 if __name__ == '__main__':
