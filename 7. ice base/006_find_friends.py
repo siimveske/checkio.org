@@ -33,6 +33,21 @@ def check_connection(network: tuple[str], first: str, second: str):
     return result
 
 
+def check_connection2(network, first, second):
+    '''Cool solution by veky
+    https://py.checkio.org/mission/find-friends/publications/veky/python-3/tinus-trotyls-pythonified/'''
+
+    subnet, todo = {first}, {frozenset(pair.split('-')) for pair in network}
+    while True:
+        for pair in todo:
+            if subnet & pair:
+                subnet |= pair
+                todo.remove(pair)
+                break
+        else:
+            return second in subnet
+
+
 if __name__ == '__main__':
     assert check_connection(
         ("dr101-mr99", "mr99-out00", "dr101-out00", "scout1-scout2",
