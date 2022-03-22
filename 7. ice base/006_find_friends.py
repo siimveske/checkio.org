@@ -1,8 +1,36 @@
 '''https://py.checkio.org/en/mission/find-friends/'''
 
+from collections import defaultdict
 
-def check_connection(network, first, second):
-    return True or False
+
+def build_graph(network: tuple[str]):
+    graph = defaultdict(list)
+    for connection in network:
+        a, b = connection.split('-')
+        graph[a].append(b)
+        graph[b].append(a)
+    return graph
+
+
+def search(graph: dict[str, list], start: str, stop: str, visited: set) -> bool:
+    if start == stop:
+        return True
+
+    visited.add(start)
+
+    for node in graph[start]:
+        if node in visited:
+            continue
+        if search(graph, node, stop, visited):
+            return True
+
+    return False
+
+
+def check_connection(network: tuple[str], first: str, second: str):
+    graph = build_graph(network)
+    result = search(graph, first, second, set())
+    return result
 
 
 if __name__ == '__main__':
