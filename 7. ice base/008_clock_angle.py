@@ -1,21 +1,16 @@
 '''https://py.checkio.org/en/mission/clock-angle/'''
 
-from datetime import datetime
-
 
 def clock_angle(time):
-    t = datetime.strptime(time, "%H:%M")
-    timevalue_12hour = t.strftime("%I:%M")
-    hh, mm = [int(i) for i in timevalue_12hour.split(':')]
-    m = mm / 60.0
-    h = (hh + m) / 12.0
+    hours, minutes = map(int, time.split(':'))
 
-    hdeg = 360 * h
-    mdeg = 360 * m
-    delta = round(abs(hdeg - mdeg), 2)
-    if delta > 180:
-        delta = 360 - delta
-    return delta
+    hours = hours % 12
+    rot_per_hour = 360 / 12
+    rot_per_minute = rot_per_hour / 60
+    hour_hand = rot_per_hour * hours + rot_per_minute * minutes
+
+    minute_hand = 360 / 60 * minutes
+    return 180 - abs(180 - abs(hour_hand - minute_hand))
 
 
 if __name__ == '__main__':
