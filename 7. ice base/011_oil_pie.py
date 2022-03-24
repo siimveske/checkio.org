@@ -9,8 +9,8 @@ def divide_pie(groups: tuple) -> tuple:
         if group_size > 0:
             result -= frac(group_size, num_of_groups)
         else:
-            part = result / num_of_groups
-            result -= part * abs(group_size)
+            part = frac(abs(group_size), num_of_groups)
+            result -= result * part
 
     return result.as_integer_ratio()
 
