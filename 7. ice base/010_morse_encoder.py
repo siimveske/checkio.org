@@ -11,12 +11,16 @@ MORSE = {'a': '.-', 'b': '-...', 'c': '-.-.',
          'y': '-.--', 'z': '--..', '0': '-----',
          '1': '.----', '2': '..---', '3': '...--',
          '4': '....-', '5': '.....', '6': '-....',
-         '7': '--...', '8': '---..', '9': '----.'
+         '7': '--...', '8': '---..', '9': '----.',
+         ' ': ' '
          }
 
 
-def morse_encoder(text):
-    return text
+def morse_encoder(text: str) -> str:
+    buffer = []
+    for i in text:
+        buffer.append(MORSE[i.lower()])
+    return ' '.join(buffer)
 
 
 if __name__ == '__main__':
