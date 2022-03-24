@@ -6,11 +6,8 @@ def divide_pie(groups: tuple) -> tuple:
     result = frac(1)
     num_of_groups = sum(map(abs, groups))
     for group_size in groups:
-        if group_size > 0:
-            result -= frac(group_size, num_of_groups)
-        else:
-            part = frac(abs(group_size), num_of_groups)
-            result -= result * part
+        f = frac(abs(group_size), num_of_groups)
+        result -= f if group_size > 0 else result * f
 
     return result.as_integer_ratio()
 
