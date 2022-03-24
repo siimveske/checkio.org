@@ -11,16 +11,13 @@ MORSE = {'a': '.-', 'b': '-...', 'c': '-.-.',
          'y': '-.--', 'z': '--..', '0': '-----',
          '1': '.----', '2': '..---', '3': '...--',
          '4': '....-', '5': '.....', '6': '-....',
-         '7': '--...', '8': '---..', '9': '----.',
-         ' ': ' '
+         '7': '--...', '8': '---..', '9': '----.'
          }
 
 
 def morse_encoder(text: str) -> str:
-    buffer = []
-    for i in text:
-        buffer.append(MORSE[i.lower()])
-    return ' '.join(buffer)
+    '''Solution from https://py.checkio.org/mission/morse-encoder/publications/igor.v.dudenko/python-3/translate/'''
+    return ' '.join(text.lower()).translate(str.maketrans(MORSE))
 
 
 if __name__ == '__main__':
