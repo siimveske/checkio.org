@@ -2,7 +2,13 @@
 
 
 def count_words(text: str, words: set) -> int:
-    return 0
+    result = set()
+    text = text.lower().split()
+    for token in text:
+        for word in words:
+            if word in token:
+                result.add(word)
+    return len(result)
 
 
 if __name__ == '__main__':
