@@ -6,6 +6,7 @@ def checkio(amount: int, coins: list[int]) -> int:
         return the minimum number of coins that add up to the price
     """
 
+    coins = sorted(coins, reverse=True)
     res = calculate(amount, coins, {})
     if res == float("inf"):
         return None
@@ -35,4 +36,8 @@ def calculate(amount: int, coins: list[int], memo: dict[int, int]) -> int:
 if __name__ == '__main__':
     assert checkio(8, [1, 3, 5]) == 2
     assert checkio(12, [1, 4, 5]) == 3
+
+    # Extra/2
+    result = checkio(123456, [1, 6, 7, 456, 678]) == 187
+
     print('OK')
