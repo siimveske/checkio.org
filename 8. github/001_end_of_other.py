@@ -5,9 +5,9 @@ def checkio(words_set: set) -> bool:
 
     for word1 in words_set:
         for word2 in words_set:
-            if word1 == word2:
-                continue
-            if word2.endswith(word1):
+            # Second parameter of 1 ensures that True
+            # will not be returned for the case when word1 == word2
+            if word2.endswith(word1, 1):
                 return True
     return False
 
