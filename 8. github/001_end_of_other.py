@@ -2,10 +2,16 @@
 
 
 def checkio(words_set: set) -> bool:
-    return True or False
+
+    for word1 in words_set:
+        for word2 in words_set:
+            if word1 == word2:
+                continue
+            if word2.endswith(word1):
+                return True
+    return False
 
 
-# These "asserts" using only for self-checking and not necessary for auto-testing
 if __name__ == '__main__':
 
     assert checkio({"hello", "lo", "he"}) == True, "helLO"
