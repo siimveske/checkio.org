@@ -15,8 +15,6 @@ def build_graph(costs: list) -> dict:
 def travel(graph: dict, start: str, destination: str, visited: set) -> int:
     if start == destination:
         return 0
-    if start in visited:
-        return 0
 
     visited.add(start)
 
@@ -34,7 +32,10 @@ def travel(graph: dict, start: str, destination: str, visited: set) -> int:
 def cheapest_flight(costs: list, a: str, b: str) -> int:
     graph = build_graph(costs)
     cost = travel(graph, a, b, set())
-    return cost if cost != float('inf') else 0
+    if cost == float('inf'):
+        return 0
+    else:
+        return cost
 
 
 if __name__ == '__main__':
