@@ -1,9 +1,40 @@
 '''https://py.checkio.org/en/mission/the-cheapest-flight/'''
-from typing import List
+
+from collections import defaultdict
 
 
-def cheapest_flight(costs: List, a: str, b: str) -> int:
-    return None
+def build_graph(costs: list) -> dict:
+    graph = defaultdict(list)
+    for flight in costs:
+        a, b, cost = flight
+        graph[a].append((b, cost))
+        graph[b].append((a, cost))
+    return graph
+
+
+def travel(graph: dict, start: str, destination: str, visited: set) -> int:
+    if start == destination:
+        return 0
+    if start in visited:
+        return 0
+
+    visited.add(start)
+
+    min_cost = float('inf')
+    for neighbor in graph[start]:
+        city, cost = neighbor
+        if city in visited:
+            continue
+        price = cost + travel(graph, city, destination, visited)
+        min_cost = min(min_cost, price)
+
+    return min_cost
+
+
+def cheapest_flight(costs: list, a: str, b: str) -> int:
+    graph = build_graph(costs)
+    cost = travel(graph, a, b, set())
+    return cost if cost != float('inf') else 0
 
 
 if __name__ == '__main__':
