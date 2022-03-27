@@ -2,21 +2,22 @@
 import math
 
 
-def simple_areas(*args) -> float:
-    n = len(args)
-    area = 0
+def circle(diameter):
+    return (diameter / 2)**2 * math.pi
 
-    if n == 1:
-        r = args[0] / 2  # diameter to radius
-        area = math.pi * r**2
-    elif n == 2:
-        a, b = args  # sides
-        area = a * b
-    else:
-        a, b, c = args  # sides
-        s = (a + b + c) / 2  # half the perimeter
-        area = math.sqrt(s * (s - a) * (s - b) * (s - c))  # Heron's Formula
 
+def rectangle(width, height):
+    return width * height
+
+
+def triangle(a, b, c):
+    s = (a + b + c) / 2  # half the perimeter
+    return math.sqrt(s * (s - a) * (s - b) * (s - c))  # Heron's Formula
+
+
+def simple_areas(*args):
+    area_function = {1: circle, 2: rectangle, 3: triangle}[len(args)]
+    area = area_function(*args)
     return round(area, 2)
 
 
