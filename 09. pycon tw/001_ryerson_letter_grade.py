@@ -1,35 +1,29 @@
 '''https://py.checkio.org/en/mission/ryerson-letter-grade/'''
 
 
+GRADE_MAP = (
+    (90, 'A+'),
+    (85, 'A'),
+    (80, 'A-'),
+    (77, 'B+'),
+    (73, 'B'),
+    (70, 'B-'),
+    (67, 'C+'),
+    (63, 'C'),
+    (60, 'C-'),
+    (57, 'D+'),
+    (53, 'D'),
+    (50, 'D-')
+)
+
+
 def ryerson_letter_grade(pct: int) -> str:
     '''Convert grade percentage to grade letter
     url: https://www.ryerson.ca/studentguide/grades/
     '''
-    if pct >= 90:
-        return 'A+'
-    if 85 <= pct <= 89:
-        return 'A'
-    if 80 <= pct <= 84:
-        return 'A-'
-    if 77 <= pct <= 79:
-        return 'B+'
-    if 73 <= pct <= 76:
-        return 'B'
-    if 70 <= pct <= 72:
-        return 'B-'
-    if 67 <= pct <= 69:
-        return 'C+'
-    if 63 <= pct <= 66:
-        return 'C'
-    if 60 <= pct <= 62:
-        return 'C-'
-    if 57 <= pct <= 59:
-        return 'D+'
-    if 53 <= pct <= 56:
-        return 'D'
-    if 50 <= pct <= 52:
-        return 'D-'
-
+    for points, letter in GRADE_MAP:
+        if pct >= points:
+            return letter
     return 'F'
 
 
